@@ -1,0 +1,32 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div>Server detail test</div>-->
+<!--</body>-->
+<!--</html>-->
+<div>
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">{{server.name}} | {{server.ip}}</h3>
+    </div>
+    <!--<h4 style="padding-left: 20px;text-align: left">{{server.name}} | {{server.ip}}</h4>-->
+    <div class="modal-body" id="modal-body">
+        <table class="table table-striped">
+            <tr>
+                <td>Наименование</td>
+                <td><input type="text" ng-model="server.name"></td>
+            </tr>
+            <tr>
+                <td>IP-адрес</td>
+                <td><input type="text" ng-model="server.ip"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-show="server!=null && server.name!=null && server.ip!=null">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
