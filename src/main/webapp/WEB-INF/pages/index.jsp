@@ -8,6 +8,7 @@
 	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
 	<script src="/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
 	<script src="/js/app.js"></script>
 	<script src="/js/services.js"></script>
@@ -31,10 +32,12 @@
 			<th style="width:30px;"></th>
 		</tr>
 		<tr ng-repeat-start="server in servers | orderBy:'name'" class="{{colorStatus(server)}}">
-			<td><a href ng-click="openPopup(server)">{{server.name}}</a>
-				<%--<a href  ng-click="showInfo(server)">Примечание</a>--%>
+			<td>
+				<a href ng-click="openPopup(server)">{{server.name}}</a>
+				<a href ng-click="showInfo(server)" >
+					<img border="0" ng-src="{{detailInfoOpenImg(server)}}"></a>
 			</td>
-			<td> {{server.ip}}</td>
+			<td>{{server.ip}}</td>
 			<td>{{server.ping}}</td>
 			<td>{{server.status}}</td>
 			<td>{{server.revision}}</td>
@@ -46,9 +49,27 @@
 			<td><a href ng-click="deleteServer(server, $index)">X</a></td>
 			<%--<td></td>--%>
 		</tr>
-		<tr ng-repeat-end ng-show="false" class="ng-hide"> <td colspan="8"> test</td> </tr>
+		<%--<tr ng-repeat-end ng-show="server.isInfoAvail" class="info-area ng-hide"> <td colspan="9"> <div class="info-area ng-hide" ng-show="server.isInfoAvail">test1 </br> test 2 </br> test 3</div></td> </tr>--%>
+		<tr ng-repeat-end id="info-tr-{{server.id}}" style="display:none;" >
+			<td colspan="9">
+				<div style="display:none;" id="info-area-{{server.id}}">
+					<table width="100%">
+						<tr>
+							<td>
+								<span style="color:darkGrey"> Логин в системе:</span> {{server.systemLogin}}
+								</br> <span style="color:darkGrey">Пароль в системе:</span> {{server.systemPassword}}
+							</td>
+							<td>
+								<span style="color:darkGrey">Логин к серверу:</span> {{server.serverLogin}}
+								</br><span style="color:darkGrey">Пароль к серверу:</span> {{server.serverPassword}}
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
 		<tr  class="table table-striped">
-			<td colspan="8">
+			<td colspan="9">
 				<span style="padding-right:10px;">Автообновление статусов</span>
 				<input type="checkbox" ng-model="isAutoUpdate" name="Включить автообновление" ng-click="goAutoUpdate()"/>
 				<span style="padding-left:10px;" ng-show="isAutoUpdate==true">интервал, сек.</span>

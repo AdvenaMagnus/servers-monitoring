@@ -48,9 +48,6 @@ public class ServerDAOHib implements ServerDAO{
 		List<SseEmitter> toDelete = new ArrayList<>();
 		for(SseEmitter emitter : emittersUpdate){
 			try {
-//				HashMap<String, Object> result = new HashMap<>();
-//				result.put("id", server.getId());
-//				result.put("server", server);
 				emitter.send(server, MediaType.APPLICATION_JSON_UTF8);
 				//emitter.send(server);
 			} catch (Exception e) {
@@ -82,12 +79,6 @@ public class ServerDAOHib implements ServerDAO{
 	@Override
 	public Server createNew(Server server) {
 		sessionFactory.getCurrentSession().persist(server);
-//		try {
-//			emitter.send("created new server: " + server.getIp() + " " + server.getIp(), MediaType.TEXT_PLAIN);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		//sendMsgByEmitters(ActionType.create, server);
 		notifyAboutUpdate(server);
 		return server;
 	}
@@ -101,12 +92,7 @@ public class ServerDAOHib implements ServerDAO{
 
 	@Override
 	public boolean delete(Server server) {
-		//try {
-			sessionFactory.getCurrentSession().delete(server);
-//			emitter.send("deleted server: " + server.getIp() + " " + server.getIp(), MediaType.TEXT_PLAIN);
-//		} catch (Exception e){
-//			return false;
-//		}
+		sessionFactory.getCurrentSession().delete(server);
 		notifyAboutDelete(server);
 		return true;
 	}

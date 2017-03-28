@@ -43,6 +43,10 @@ public class Server {
 	long id;
 	String name;
 	String ip;
+	String systemLogin;
+	String systemPassword;
+	String serverLogin;
+	String serverPassword;
 	//ServerStatus status = ServerStatus.ok;
 
 
@@ -67,7 +71,35 @@ public class Server {
 		this.ip = ip;
 	}
 
-//	@JsonIgnore
+	public String getSystemLogin() {
+		return systemLogin;
+	}
+	public void setSystemLogin(String systemLogin) {
+		this.systemLogin = systemLogin;
+	}
+
+	public String getSystemPassword() {
+		return systemPassword;
+	}
+	public void setSystemPassword(String systemPassword) {
+		this.systemPassword = systemPassword;
+	}
+
+	public String getServerLogin() {
+		return serverLogin;
+	}
+	public void setServerLogin(String serverLogin) {
+		this.serverLogin = serverLogin;
+	}
+
+	public String getServerPassword() {
+		return serverPassword;
+	}
+	public void setServerPassword(String serverPassword) {
+		this.serverPassword = serverPassword;
+	}
+
+	//	@JsonIgnore
 //	public ServerStatus getStatus() throws Exception {
 //		if(this.getIp()!=null) {
 ////			try {

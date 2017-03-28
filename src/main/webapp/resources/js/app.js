@@ -1,5 +1,5 @@
 ﻿
-var monitoringModule = angular.module('main',['ui.bootstrap']);
+var monitoringModule = angular.module('main',['ui.bootstrap', 'ngAnimate']);
 
 monitoringModule.controller('mainController', function($scope, $http, serversFactory, $uibModal, $timeout) {
 
@@ -45,16 +45,35 @@ monitoringModule.controller('mainController', function($scope, $http, serversFac
 	CRUDconf($scope, $http, serversFactory);
 	statusesConf($scope, serversFactory);
 	SSEconf($scope, serversFactory);
+	detailInfoconf($scope, serversFactory);
 	timerConf($scope, $timeout);
 
-	$scope.showInfo = function(server){
-		if(typeof server.isInfoAvail == 'undefined'){
-			server.isInfoAvail = true;
-		} else server.isInfoAvail = !server.isInfoAvail;
-	};
+
 
 });
 
+/**Logic for server detail info */
+function detailInfoconf($scope){
+    $scope.showInfo = function(server){
+        if(typeof server.isInfoAvail == 'undefined'){
+            server.isInfoAvail = true;
+            //$('#info-area-'+server.id).hide();
+        } else server.isInfoAvail = !server.isInfoAvail;
+
+        $('#info-tr-'+server.id).slideToggle();
+        $('#info-area-'+server.id).slideToggle();
+
+    };
+
+    $scope.detailInfoOpenImg = function (server) {
+       if(typeof server.isInfoAvail=='undefined'){
+            return '/images/show_details_down.png';
+		}
+		if(server.isInfoAvail) return '/images/show_details_up.png'
+		else return '/images/show_details_down.png'
+    }
+
+}
 
 /**DAO for statuses*/
 function statusesConf($scope, serversFactory){
@@ -119,9 +138,9 @@ function statusesConf($scope, serversFactory){
 	};
 
 	$scope.getDaysTextColor = function(days){
-		if(days<=7) return 'green';
-		if(days>7 && days<=30) return 'orange';
-		if(days>30) return 'red';
+		if(days<=30) return 'green';
+		if(days>30 && days<=90) return 'orange';
+		if(days>90) return 'red';
 	};
 }
 
