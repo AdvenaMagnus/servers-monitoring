@@ -7,8 +7,15 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import core.enums.ServerStatus;
 import core.server.Server;
+import core.server.ServerDAO;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,28 +23,41 @@ import java.util.regex.Pattern;
 /**
  * Created by Alexander Dublyanin on 18.03.2017.
  */
+@Repository
 public class SystemInfo {
 
-	long id;
-	Server owner;
+	@Autowired
+	@Qualifier("server_dao_persist")
+	ServerDAO serverDAO;
+
+	long serverId;
 	ServerStatus status;
 	String revision;
 	String revisionDate;
+	String updateTime;
 
 	public SystemInfo(){
 	}
 
 	public SystemInfo(Server server){
 		if(server!=null && server.getIp()!=null){
+			this.setServerId(server.getId());
 			updateData(server.getIp());
+//			if(revisionInfo!=null && revisionInfo[0]!=null && revisionInfo[1]!=null) {
+//				server.setLastUpdateRevision(revisionInfo[0]);
+//				server.setLastUpdateRevisionDate(revisionInfo[1]);
+//				DateFormat df = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+//				server.setLastUpdateTime(df.format(new Date()));
+//				serverDAO.update(server);
+//			}
 		}
 	}
 
-	public long getId() {
-		return id;
+	public long getServerId() {
+		return serverId;
 	}
-	public void setId(long id) {
-		this.id = id;
+	public void setServerId(long serverId) {
+		this.serverId = serverId;
 	}
 
 	public ServerStatus getStatus() {
@@ -61,13 +81,23 @@ public class SystemInfo {
 		this.revisionDate = revisionDate;
 	}
 
-	private void updateData(String ip) {
+	public String getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	private String[] updateData(String ip) {
+		String[] revisionInfo = null;
 		try {
 			HtmlPage responsePage = makeRequest("http://"+ip);
 			if(responsePage!=null){
-				String[] revisionAndDate = getRevisionAndDate(responsePage);
-				if(revisionAndDate[0]!=null)this.setRevision(revisionAndDate[0]);
-				if(revisionAndDate[1]!=null)this.setRevisionDate(revisionAndDate[1]);
+				revisionInfo = getRevisionAndDate(responsePage);
+				if(revisionInfo[0]!=null) this.setRevision(revisionInfo[0]);
+				if(revisionInfo[1]!=null) this.setRevisionDate(revisionInfo[1]);
+				DateFormat df = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+				this.setUpdateTime(df.format(new Date()));
 				this.setStatus(ServerStatus.online);
 			}
 			else this.setStatus(ServerStatus.offline);
@@ -76,6 +106,7 @@ public class SystemInfo {
 			System.out.println("updateData exeption");
 			this.setStatus(ServerStatus.offline);
 		}
+		return revisionInfo;
 	}
 
 	private String[] getRevisionAndDate(HtmlPage page){

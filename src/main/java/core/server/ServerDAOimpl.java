@@ -1,5 +1,6 @@
 package core.server;
 
+import core.SystemInfo;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +53,23 @@ public class ServerDAOimpl implements ServerDAO{
 	}
 
 	@Override
-	public Server update(Server server) {
+	public Server update(Server server, boolean emit) {
 		return null;
 	}
 
 	@Override
 	public boolean delete(Server server) {
 		return false;
+	}
+
+	@Override
+	public SystemInfo getSystemInfo(Server server) {
+		return null;
+	}
+
+	@Override
+	public SystemInfo getSystemInfoSaved(Server server) {
+		return null;
 	}
 
 //	@Override

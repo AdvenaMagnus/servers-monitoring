@@ -35,39 +35,28 @@ public class SSEcontroller {
 	@Qualifier("sseListToDelete")
 	List<SseEmitter> emittersDelete;
 
-	@RequestMapping("/sseUpdate")
+	@Autowired
+	@Qualifier("sseListStatus")
+	List<SseEmitter> emittersStatus;
+
+	@RequestMapping("/sse/servers/update")
 	public ResponseBodyEmitter sseUpdate (@CookieValue("JSESSIONID") String submissionId) {
-		//SseEmitter emitter = sseEmitter;
-		//SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 		SseEmitter  emitter = new SseEmitter (Long.MAX_VALUE);
-//		ExecutorService service = Executors.newSingleThreadExecutor();
-//		service.execute(() -> {
-//			for (int i = 0; i < 500; i++) {
-//				try {
-//					emitter.send(LocalTime.now().toString() + " i: " +i  , MediaType.TEXT_PLAIN);
-//
-//					Thread.sleep(500);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					emitter.completeWithError(e);
-//					return;
-//				}
-//			}
-//			emitter.complete();
-//		});
-//		try {
-//			emitter.send(LocalTime.now().toString()  , MediaType.TEXT_PLAIN);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 		emittersUpdate.add(emitter);
 		return emitter;
 	}
 
-	@RequestMapping("/sseDelete")
+	@RequestMapping("/sse/servers/delete")
 	public ResponseBodyEmitter sseDelete (@CookieValue("JSESSIONID") String submissionId) {
 		SseEmitter  emitter = new SseEmitter (Long.MAX_VALUE);
 		emittersDelete.add(emitter);
+		return emitter;
+	}
+
+	@RequestMapping("/sse/servers/status")
+	public ResponseBodyEmitter sseServersStatus (@CookieValue("JSESSIONID") String submissionId) {
+		SseEmitter  emitter = new SseEmitter (Long.MAX_VALUE);
+		emittersStatus.add(emitter);
 		return emitter;
 	}
 

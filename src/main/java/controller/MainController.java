@@ -1,5 +1,7 @@
 package controller;
 
+import core.enums.ServerStatus;
+import core.server.LightServer;
 import core.server.Server;
 import core.server.ServerDAO;
 import core.SystemInfo;
@@ -36,8 +38,21 @@ public class MainController {
 	@RequestMapping(path = "/servers/status/{serverId}")
 	public ResponseEntity<SystemInfo> serverStatus(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
-		if(server !=null)
-			return new ResponseEntity<SystemInfo>(server.getSystemInfo(), HttpStatus.OK);
+		if(server !=null){
+			SystemInfo sysInfo = serverDao.getSystemInfo(server);
+			if(sysInfo.getStatus() != ServerStatus.offline) serverDao.update(server, false);
+			return new ResponseEntity<SystemInfo>(sysInfo, HttpStatus.OK);
+		}
+		else return new ResponseEntity(HttpStatus.NOT_FOUND);
+	}
+
+	@RequestMapping(path = "/servers/status/saved/{serverId}")
+	public ResponseEntity<SystemInfo> serverStatusSaved(@PathVariable("serverId") long id) throws Exception {
+		Server server = serverDao.serverById(id);
+		if(server !=null){
+			SystemInfo sysInfo = serverDao.getSystemInfoSaved(server);
+			return new ResponseEntity<SystemInfo>(sysInfo, HttpStatus.OK);
+		}
 		else return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
@@ -58,6 +73,13 @@ public class MainController {
 		return new ResponseEntity(serverDao.allServers(), HttpStatus.OK);
 	}
 
+	@RequestMapping(path = "/servers/light")
+	public ResponseEntity<List<LightServer>> serversLight(){
+		List<LightServer> result = new ArrayList<>();
+		serverDao.allServers().forEach(server -> result.add(server.getLightServer()));
+		return new ResponseEntity(result, HttpStatus.OK);
+	}
+
 	@RequestMapping(path = "/servers/create", method = RequestMethod.PUT)
 	public ResponseEntity<Server> newServer(@RequestBody Server server){
 		Server serv = serverDao.createNew(server);
@@ -67,7 +89,7 @@ public class MainController {
 
 	@RequestMapping(path = "/servers/update", method = RequestMethod.POST)
 	public ResponseEntity<Server> updateServer(@RequestBody Server server){
-		Server serv = serverDao.update(server);
+		Server serv = serverDao.update(server, true);
 		if(serv!=null) return new ResponseEntity(serv, HttpStatus.OK);
 		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 	}

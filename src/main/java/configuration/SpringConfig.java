@@ -126,4 +126,11 @@ public class SpringConfig extends WebMvcConfigurerAdapter{
 		return emitters;
 	}
 
+	@Bean
+	@Qualifier("sseListStatus")
+	public List<SseEmitter> sseEmittersForStatuses(){
+		List<SseEmitter> emitters = new ArrayList<>();
+		return emitters;
+	}
+
 }

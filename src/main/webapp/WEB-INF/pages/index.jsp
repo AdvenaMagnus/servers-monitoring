@@ -25,7 +25,7 @@
 			<th style="width:100px;"> Пинг</th>
 			<th style="width:100px;"> Система</th>
 			<th style="width:100px;"> Ревизия</th>
-			<th style="width:150px;"> Дата ревизии</th>
+			<th style="width:150px;">Дата ревизии</th>
 			<%--<th style="width:150px;"> Дней после обновления</th>--%>
 			<th style="width:150px;"><a href ng-click="updateAllNow()">Обновить все</a></th>
 			<th style="width:100px;"></th>
@@ -41,8 +41,11 @@
 			<td>{{server.ping}}</td>
 			<td>{{server.status}}</td>
 			<td>{{server.revision}}</td>
-			<td>{{server.revisionDate}}
+			<td>
+				{{server.revisionDate}}
 				{{server.lastUpdateDays!=null? '(' : ''}}<font color="{{getDaysTextColor(server.lastUpdateDays)}}">{{server.lastUpdateDays}}</font>{{server.lastUpdateDays!=null? ')' : ''}}
+				</br>
+				<span style="color:darkgrey; font-size:9px;">{{server.lastUpdateTime}}</span>
 			</td>
 			<td><a href  ng-click="updateServer(server)">Обновить статус</a></td>
 			<td><a href="http://{{server.ip}}" target="_blank">Перейти</a></td>

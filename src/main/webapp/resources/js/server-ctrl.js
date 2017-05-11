@@ -25,12 +25,11 @@ monitoringModule.controller('serverCtrl', function($scope, $uibModalInstance, se
         if(typeof $scope.server.id == 'undefined'){
             var callback = function(server){
                 //serversScope.servers.push(server);
-                serversScope.updateServerLocal(serversFactory.servers, server);
+                //serversScope.updateServerLocal(serversFactory.servers, server);
                 $uibModalInstance.close($scope.server);
             };
             serversScope.createServer($scope.server, callback);
         }
-
     };
 
     $scope.cancel = function () {

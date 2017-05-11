@@ -1,22 +1,14 @@
 package core.server;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.javascript.JavaScriptEngine;
 import core.LightObject;
 import core.SystemInfo;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Grey on 17.03.2017.
@@ -43,10 +35,11 @@ public class Server {
 	long id;
 	String name;
 	String ip;
-	String systemLogin;
-	String systemPassword;
-	String serverLogin;
-	String serverPassword;
+	@ManyToOne
+	ServerDetailInfo detailInfo;
+	String lastUpdateRevision;
+	String lastUpdateRevisionDate;
+	String lastUpdateTime;
 	//ServerStatus status = ServerStatus.ok;
 
 
@@ -71,32 +64,32 @@ public class Server {
 		this.ip = ip;
 	}
 
-	public String getSystemLogin() {
-		return systemLogin;
+	public String getLastUpdateRevision() {
+		return lastUpdateRevision;
 	}
-	public void setSystemLogin(String systemLogin) {
-		this.systemLogin = systemLogin;
-	}
-
-	public String getSystemPassword() {
-		return systemPassword;
-	}
-	public void setSystemPassword(String systemPassword) {
-		this.systemPassword = systemPassword;
+	public void setLastUpdateRevision(String lastUpdateRevision) {
+		this.lastUpdateRevision = lastUpdateRevision;
 	}
 
-	public String getServerLogin() {
-		return serverLogin;
+	public String getLastUpdateRevisionDate() {
+		return lastUpdateRevisionDate;
 	}
-	public void setServerLogin(String serverLogin) {
-		this.serverLogin = serverLogin;
+	public void setLastUpdateRevisionDate(String lastUpdateRevisionDate) {
+		this.lastUpdateRevisionDate = lastUpdateRevisionDate;
 	}
 
-	public String getServerPassword() {
-		return serverPassword;
+	public String getLastUpdateTime() {
+		return lastUpdateTime;
 	}
-	public void setServerPassword(String serverPassword) {
-		this.serverPassword = serverPassword;
+	public void setLastUpdateTime(String lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+
+	public ServerDetailInfo getDetailInfo() {
+		return detailInfo;
+	}
+	public void setDetailInfo(ServerDetailInfo detailInfo) {
+		this.detailInfo = detailInfo;
 	}
 
 	//	@JsonIgnore
@@ -169,17 +162,42 @@ public class Server {
 //		this.status = status;
 //	}
 
-	@JsonIgnore
-	@Transient
-	public SystemInfo getSystemInfo(){
-		return new SystemInfo(this);
-	}
+//	@JsonIgnore
+//	@Transient
+//	public SystemInfo getSystemInfo(){
+//		SystemInfo sysInfo = new SystemInfo(this);
+//		if(sysInfo!=null && sysInfo.getRevision()!=null && sysInfo.getRevisionDate()!=null){
+//			this.setLastUpdateRevision(sysInfo.getRevision());
+//			this.setLastUpdateRevisionDate(sysInfo.getRevisionDate());
+//			DateFormat df = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+//			this.setLastUpdateTime(df.format(new Date()));
+//		}
+//		return sysInfo;
+//	}
+//
+//	@JsonIgnore
+//	@Transient
+//	public SystemInfo getSystemInfoSaved(){
+//		SystemInfo sysInfo = new SystemInfo();
+//		sysInfo.setServerId(this.getId());
+//		sysInfo.setRevision(this.getLastUpdateRevision());
+//		sysInfo.setRevisionDate(this.getLastUpdateRevisionDate());
+//		return sysInfo;
+//	}
+
+
 
 
 	@JsonIgnore
 	@Transient
 	public LightObject getLight(){
 		return new LightObject(this.id, this.name+" "+this.ip);
+	}
+
+	@JsonIgnore
+	@Transient
+	public LightServer getLightServer(){
+		return new LightServer(this);
 	}
 
 	@JsonIgnore

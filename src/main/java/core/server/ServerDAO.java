@@ -1,24 +1,32 @@
 package core.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.LightObject;
+import core.SystemInfo;
 import core.enums.ServerStatus;
 
+import javax.persistence.Transient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Grey on 17.03.2017.
+ * Created by Alexander on 17.03.2017.
  */
 public interface ServerDAO {
 
 	List<Server> allServers();
 	Server serverById(long id);
 	Server createNew(Server server);
-	Server update(Server server);
+	Server update(Server server, boolean emit);
 	boolean delete(Server server);
+	SystemInfo getSystemInfo(Server server);
+	SystemInfo getSystemInfoSaved(Server server);
 
 	default String getPing(Server server) throws Exception{
 		if(server!=null && server.getIp()!=null){
@@ -31,19 +39,6 @@ public interface ServerDAO {
 				return "нет";
 			}
 		} else return "нет";
-	}
-
-	default ServerStatus checkStatus(Server server) throws Exception{
-		if(server!=null && server.getIp()!=null) {
-			URL url = new URL("http://" + server.getIp());
-			URLConnection yc = url.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-			String inputLine;
-
-			while ((inputLine = in.readLine()) != null) if(inputLine.contains("modulesMenu.jspx")) return ServerStatus.online;
-			in.close();
-		}
-		return ServerStatus.offline;
 	}
 
 	default List<LightObject> allServersLight(){

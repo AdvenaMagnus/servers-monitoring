@@ -14,7 +14,7 @@ monitoringModule.controller('mainController', function($scope, $http, serversFac
 
 	/**Fetch servers list*/
 	if(serversFactory.servers == null){
-		$http.get('/servers').then(function(response){
+		$http.get('/servers/light').then(function(response){
 			serversFactory.servers = response.data;
 			$scope.servers = serversFactory.servers;
 		}, function(){
@@ -79,23 +79,42 @@ function detailInfoconf($scope){
 function statusesConf($scope, serversFactory){
 
 	/**Update server status on local server object*/
-	$scope.getServerStatus = function(server){
-		//if(serversFactory.isUpdateStatus) {
-		$.getJSON("/servers/status/" + server.id, function (data) {
-			console.log("Fetched server status");
-			console.log(data);
-			$scope.$apply(function () {
-				server.status = data.status;
-				server.revision = data.revision;
-				server.revisionDate = data.revisionDate;
-				if(typeof server.revisionDate != 'undefined' && server.revisionDate != null)
-					server.lastUpdateDays = serversFactory.daysBetweenDates(
-							new Date(serversFactory.formatDate($scope.currentDate)),
-							new Date(serversFactory.formatDate(server.revisionDate)));
-			});
-		});
-		//}
-	};
+    $scope.getServerStatus = function(server){
+        //if(serversFactory.isUpdateStatus) {
+        $.getJSON("/servers/status/" + server.id, function (data) {
+            console.log("Fetched server status");
+            console.log(data);
+            // $scope.$apply(function () {
+            // 	server.status = data.status;
+            // 	server.revision = data.revision;
+            // 	server.revisionDate = data.revisionDate;
+            // 	if(typeof server.revisionDate != 'undefined' && server.revisionDate != null)
+            // 		server.lastUpdateDays = serversFactory.daysBetweenDates(
+            // 				new Date(serversFactory.formatDate($scope.currentDate)),
+            // 				new Date(serversFactory.formatDate(server.revisionDate)));
+            // });
+        });
+        //}
+    };
+
+    /**Update server saved status on local server object*/
+    $scope.getServerStatusSaved = function(server){
+        //if(serversFactory.isUpdateStatus) {
+        $.getJSON("/servers/status/saved" + server.id, function (data) {
+            console.log("Fetched server status saved");
+            console.log(data);
+            $scope.$apply(function () {
+            	server.status = data.status;
+            	server.revision = data.revision;
+            	server.revisionDate = data.revisionDate;
+            	if(typeof server.revisionDate != 'undefined' && server.revisionDate != null)
+            		server.lastUpdateDays = serversFactory.daysBetweenDates(
+            				new Date(serversFactory.formatDate($scope.currentDate)),
+            				new Date(serversFactory.formatDate(server.revisionDate)));
+            });
+        });
+        //}
+    };
 
 	/**Update server ping on local server object*/
 	$scope.getServerPing = function (server) {
@@ -142,6 +161,22 @@ function statusesConf($scope, serversFactory){
 		if(days>30 && days<=90) return 'orange';
 		if(days>90) return 'red';
 	};
+
+    /** Clear all status data on servers*/
+    $scope.clearStatuses = function(array){
+        array.forEach(function(s){
+            $scope.clearServerData(s)
+        });
+    };
+
+    /**Clear status data on server*/
+    $scope.clearServerData = function(s){
+        s.ping = null;
+        s.status = null;
+        s.revision = null;
+        s.revisionDate = null;
+        s.lastUpdateDays = null;
+    };
 }
 
 
@@ -166,7 +201,7 @@ function timerConf($scope, $timeout){
 
 /**SSE configuration*/
 function SSEconf($scope, serversFactory){
-	var sourceDelete = new EventSource('/sseDelete');
+	var sourceDelete = new EventSource('/sse/servers/delete');
 	sourceDelete.onmessage = function (event) {
 		console.log(event);
 		$scope.$apply(function(){
@@ -180,7 +215,7 @@ function SSEconf($scope, serversFactory){
 		console.log('sse delete error');
 	};
 
-	var sourceUpdate = new EventSource('/sseUpdate');
+	var sourceUpdate = new EventSource('/sse/servers/update');
 	sourceUpdate.onmessage = function (event) {
 		//console.log(event);
 		$scope.$apply(function(){
@@ -193,6 +228,30 @@ function SSEconf($scope, serversFactory){
 	sourceUpdate.onerror = function (event) {
 		console.log('sse update error');
 	};
+
+    var sourceStatusUpdate = new EventSource('/sse/servers/status');
+    sourceStatusUpdate.onmessage = function (event) {
+        console.log('status update');
+        console.log(event);
+        $scope.$apply(function(){
+            //TODO update status
+            var parsedStatus = serversFactory.parseJson(event.data);
+            var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.serverId)];
+			if(typeof serverLocal != 'undefined'){
+                serverLocal.revision =  parsedStatus.revision;
+                serverLocal.revisionDate =  parsedStatus.revisionDate;
+                serverLocal.status =  parsedStatus.status;
+                serverLocal.lastUpdateTime =  parsedStatus.updateTime;
+                if(typeof serverLocal.revisionDate != 'undefined' && serverLocal.revisionDate != null)
+                    serverLocal.lastUpdateDays = serversFactory.daysBetweenDates(
+                        new Date(serversFactory.formatDate($scope.currentDate)),
+                        new Date(serversFactory.formatDate(serverLocal.revisionDate)));
+			}
+        })
+    };
+    sourceStatusUpdate.onerror = function (event) {
+        console.log('sse status error');
+    };
 }
 
 function CRUDconf($scope, $http, serversFactory){
@@ -205,29 +264,24 @@ function CRUDconf($scope, $http, serversFactory){
 		return result;
 	};
 
-	/** Update server in array, if server does not exist - add to array*/
+	/** Update server in array, if server does not exist - add to array; updating by server.id*/
 	$scope.updateServerLocal = function(array, server){
 		var index = $scope.findServerIndexById(array, server.id);
-		if(index!=-1)array[index] = server;
+		//if(index!=-1)array[index] = server;
+		if(index!=-1){
+			var serverFound = array[index];
+            serverFound.name = server.name;
+            serverFound.ip = server.ip;
+            if(server.detailInfo!=null){
+                serverFound.detailInfo.systemLogin = server.detailInfo.systemLogin;
+                serverFound.detailInfo.systemPassword = server.detailInfo.systemPassword;
+                serverFound.detailInfo.serverLogin = server.detailInfo.serverLogin;
+                serverFound.detailInfo.serverPassword = server.detailInfo.serverPassword;
+			}
+        }
 		else {
 			array.push(server);
 		}
-	};
-
-	/** Clear all status data on servers*/
-	$scope.clearStatuses = function(array){
-		array.forEach(function(s){
-			$scope.clearServerData(s)
-		});
-	};
-
-	/**Clear status data on server*/
-	$scope.clearServerData = function(s){
-		s.ping = null;
-		s.status = null;
-		s.revision = null;
-		s.revisionDate = null;
-		s.lastUpdateDays = null;
 	};
 
 	/**Create server object on Web-server and on local */
@@ -257,19 +311,20 @@ function CRUDconf($scope, $http, serversFactory){
 	/**Delete server*/
 	$scope.deleteServer = function (server, index) {
 		if (server != null && server.id != null) {
-			var collback = function () {
-				if (index > -1) {
-					serversFactory.servers = $.grep(serversFactory.servers, function (value) {
-						return value.id != server.id;
-					});
-					$scope.servers = serversFactory.servers;
-				}
-				else {
-					console.log(server);
-					console.log('has index ' + index);
-				}
-			};
-			$scope.deleteServerFromDB(server, collback)
+			// var collback = function () {
+			// 	if (index > -1) {
+			// 		serversFactory.servers = $.grep(serversFactory.servers, function (value) {
+			// 			return value.id != server.id;
+			// 		});
+			// 		$scope.servers = serversFactory.servers;
+			// 	}
+			// 	else {
+			// 		console.log(server);
+			// 		console.log('has index ' + index);
+			// 	}
+			// };
+			//$scope.deleteServerFromDB(server, collback)
+			$scope.deleteServerFromDB(server)
 		}
 	};
 
@@ -279,7 +334,7 @@ function CRUDconf($scope, $http, serversFactory){
 			console.log("Deleted");
 			console.log(server);
 			//servers.push(response.data);
-			callback();
+			//callback();
 		}, function(){
 			console.log("Error deleting server")
 		});
