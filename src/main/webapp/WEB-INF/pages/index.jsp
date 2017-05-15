@@ -39,15 +39,15 @@
 			</td>
 			<td>{{server.ip}}</td>
 			<td>{{server.ping}}</td>
-			<td>{{server.status}}</td>
-			<td>{{server.revision}}</td>
+			<td>{{server.serverStatusCached.status}}</td>
+			<td>{{server.serverStatusCached.revision}}</td>
 			<td>
-				{{server.revisionDate}}
+				{{server.serverStatusCached.revisionDate}}
 				{{server.lastUpdateDays!=null? '(' : ''}}<font color="{{getDaysTextColor(server.lastUpdateDays)}}">{{server.lastUpdateDays}}</font>{{server.lastUpdateDays!=null? ')' : ''}}
 				</br>
-				<span style="color:darkgrey; font-size:9px;">{{server.lastUpdateTime}}</span>
+				<span style="color:darkgrey; font-size:9px;">{{formatIntForTime(server.serverStatusCached.hours)}}:{{formatIntForTime(server.serverStatusCached.min)}} {{server.serverStatusCached.date}}</span>
 			</td>
-			<td><a href  ng-click="updateServer(server)">Обновить статус</a></td>
+			<td ng-init="updateServer(server)"><a href  ng-click="updateServer(server)">Обновить статус</a></td>
 			<td><a href="http://{{server.ip}}" target="_blank">Перейти</a></td>
 			<td><a href ng-click="deleteServer(server, $index)">X</a></td>
 			<%--<td></td>--%>
@@ -59,12 +59,12 @@
 					<table width="100%">
 						<tr>
 							<td>
-								<span style="color:darkGrey"> Логин в системе:</span> {{server.systemLogin}}
-								</br> <span style="color:darkGrey">Пароль в системе:</span> {{server.systemPassword}}
+								<span style="color:darkGrey"> Логин в системе:</span> {{server.detailInfo.systemLogin}}
+								</br> <span style="color:darkGrey">Пароль в системе:</span> {{server.detailInfo.systemPassword}}
 							</td>
 							<td>
-								<span style="color:darkGrey">Логин к серверу:</span> {{server.serverLogin}}
-								</br><span style="color:darkGrey">Пароль к серверу:</span> {{server.serverPassword}}
+								<span style="color:darkGrey">Логин к серверу:</span> {{server.detailInfo.serverLogin}}
+								</br><span style="color:darkGrey">Пароль к серверу:</span> {{server.detailInfo.serverPassword}}
 							</td>
 						</tr>
 					</table>

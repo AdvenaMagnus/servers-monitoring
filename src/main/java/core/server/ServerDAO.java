@@ -1,18 +1,10 @@
 package core.server;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import core.LightObject;
-import core.SystemInfo;
-import core.enums.ServerStatus;
+import core.server.entities.Server;
 
-import javax.persistence.Transient;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,10 +15,10 @@ public interface ServerDAO {
 	List<Server> allServers();
 	Server serverById(long id);
 	Server createNew(Server server);
-	Server update(Server server, boolean emit);
+	Server update(Server server);
 	boolean delete(Server server);
-	SystemInfo getSystemInfo(Server server);
-	SystemInfo getSystemInfoSaved(Server server);
+	//SystemInfo getSystemInfo(Server server);
+	//SystemInfo getSystemInfoSaved(Server server);
 
 	default String getPing(Server server) throws Exception{
 		if(server!=null && server.getIp()!=null){

@@ -1,5 +1,7 @@
 package core.server;
 
+import core.server.entities.Server;
+
 /**
  * Created by Alexander on 30.03.2017.
  */

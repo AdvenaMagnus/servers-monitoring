@@ -1,10 +1,11 @@
 package controller;
 
-import core.enums.ServerStatus;
 import core.server.LightServer;
-import core.server.Server;
+import core.server.StatusDAO;
+import core.server.entities.Server;
 import core.server.ServerDAO;
-import core.SystemInfo;
+import core.server.entities.ServerDetailInfo;
+import core.server.entities.ServerStatusCached;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -30,28 +31,34 @@ public class MainController {
 	@Qualifier("server_dao_persist")
 	ServerDAO serverDao;
 
+	@Autowired
+	NotifyService notifyService;
+
+	@Autowired
+	StatusDAO statusDAO;
+
 	@RequestMapping(path = "/")
 	public String index(){
 		return "index";
 	}
 
 	@RequestMapping(path = "/servers/status/{serverId}")
-	public ResponseEntity<SystemInfo> serverStatus(@PathVariable("serverId") long id) throws Exception {
+	public ResponseEntity<ServerStatusCached> serverStatus(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(server !=null){
-			SystemInfo sysInfo = serverDao.getSystemInfo(server);
-			if(sysInfo.getStatus() != ServerStatus.offline) serverDao.update(server, false);
-			return new ResponseEntity<SystemInfo>(sysInfo, HttpStatus.OK);
+			statusDAO.updateStatus(server, 2);
+			notifyService.notifyStatus(server);
+			return new ResponseEntity(HttpStatus.OK);
 		}
 		else return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 
-	@RequestMapping(path = "/servers/status/saved/{serverId}")
-	public ResponseEntity<SystemInfo> serverStatusSaved(@PathVariable("serverId") long id) throws Exception {
+	@RequestMapping(path = "/servers/detailinfo/{serverId}")
+	public ResponseEntity<ServerDetailInfo> serverDetailInfo(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(server !=null){
-			SystemInfo sysInfo = serverDao.getSystemInfoSaved(server);
-			return new ResponseEntity<SystemInfo>(sysInfo, HttpStatus.OK);
+			notifyService.notifyDetailInfo(server);
+			return new ResponseEntity(HttpStatus.OK);
 		}
 		else return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
@@ -83,13 +90,17 @@ public class MainController {
 	@RequestMapping(path = "/servers/create", method = RequestMethod.PUT)
 	public ResponseEntity<Server> newServer(@RequestBody Server server){
 		Server serv = serverDao.createNew(server);
-		if(serv!=null) return new ResponseEntity(serv, HttpStatus.OK);
+		if(serv!=null){
+			notifyService.notifyAboutUpdate(server);
+			return new ResponseEntity(serv, HttpStatus.OK);
+		}
 		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@RequestMapping(path = "/servers/update", method = RequestMethod.POST)
 	public ResponseEntity<Server> updateServer(@RequestBody Server server){
-		Server serv = serverDao.update(server, true);
+		//TODO solve problem if server comes w/o status but status exists in db
+		Server serv = serverDao.update(server);
 		if(serv!=null) return new ResponseEntity(serv, HttpStatus.OK);
 		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -98,6 +109,7 @@ public class MainController {
 	public ResponseEntity deleteServer(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(serverDao.delete(server)) {
+			notifyService.notifyAboutDelete(server);
 			return new ResponseEntity(HttpStatus.OK);
 		}
 		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,6 +1,6 @@
 package core.server;
 
-import core.SystemInfo;
+import core.server.entities.Server;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +29,17 @@ public class ServerDAOimpl implements ServerDAO{
 //		return result;
 //	}
 //	@Override
-//	public ServerStatus checkStatus(Server server) throws Exception {
+//	public ServerStatusCached checkStatus(Server server) throws Exception {
 //		if(server!=null && server.getIp()!=null) {
 //			URL url = new URL("http://" + server.getIp());
 //			URLConnection yc = url.openConnection();
 //			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
 //			String inputLine;
 //
-//			while ((inputLine = in.readLine()) != null) if(inputLine.contains("modulesMenu.jspx")) return ServerStatus.online;
+//			while ((inputLine = in.readLine()) != null) if(inputLine.contains("modulesMenu.jspx")) return ServerStatusCached.online;
 //			in.close();
 //		}
-//		return ServerStatus.offline;
+//		return ServerStatusCached.offline;
 //	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ServerDAOimpl implements ServerDAO{
 	}
 
 	@Override
-	public Server update(Server server, boolean emit) {
+	public Server update(Server server) {
 		return null;
 	}
 
@@ -62,15 +62,6 @@ public class ServerDAOimpl implements ServerDAO{
 		return false;
 	}
 
-	@Override
-	public SystemInfo getSystemInfo(Server server) {
-		return null;
-	}
-
-	@Override
-	public SystemInfo getSystemInfoSaved(Server server) {
-		return null;
-	}
 
 //	@Override
 //	public String getPing(Server server) throws Exception {

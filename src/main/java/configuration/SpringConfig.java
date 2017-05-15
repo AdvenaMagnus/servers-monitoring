@@ -106,31 +106,44 @@ public class SpringConfig extends WebMvcConfigurerAdapter{
 		return transactionManager;
 	}
 
-	@Bean
-	public SseEmitter sseEmitter(){
-		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-		return emitter;
-	}
+//	@Bean
+//	public SseEmitter sseEmitter(){
+//		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+//		return emitter;
+//	}
 
 	@Bean
-	@Qualifier("sseListToUpdate")
-	public List<SseEmitter> sseEmittersForUpdate(){
+	public List<SseEmitter> sseEmitters(){
 		List<SseEmitter> emitters = new ArrayList<>();
 		return emitters;
 	}
 
-	@Bean
-	@Qualifier("sseListToDelete")
-	public List<SseEmitter> sseEmittersForDelete(){
-		List<SseEmitter> emitters = new ArrayList<>();
-		return emitters;
-	}
-
-	@Bean
-	@Qualifier("sseListStatus")
-	public List<SseEmitter> sseEmittersForStatuses(){
-		List<SseEmitter> emitters = new ArrayList<>();
-		return emitters;
-	}
+//	@Bean
+//	@Qualifier("sseListToUpdate")
+//	public List<SseEmitter> sseEmittersForUpdate(){
+//		List<SseEmitter> emitters = new ArrayList<>();
+//		return emitters;
+//	}
+//
+//	@Bean
+//	@Qualifier("sseListToDelete")
+//	public List<SseEmitter> sseEmittersForDelete(){
+//		List<SseEmitter> emitters = new ArrayList<>();
+//		return emitters;
+//	}
+//
+//	@Bean
+//	@Qualifier("sseListStatus")
+//	public List<SseEmitter> sseEmittersForStatuses(){
+//		List<SseEmitter> emitters = new ArrayList<>();
+//		return emitters;
+//	}
+//
+//	@Bean
+//	@Qualifier("sseListDetailInfo")
+//	public List<SseEmitter> sseEmittersForDetailInfo(){
+//		List<SseEmitter> emitters = new ArrayList<>();
+//		return emitters;
+//	}
 
 }
