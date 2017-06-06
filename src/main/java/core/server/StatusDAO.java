@@ -47,10 +47,10 @@ public class StatusDAO {
         }
         else status = server.getServerStatusCached();
 
-        //TODO check time from last update, and update cached status or return current
-        if(isUpdateAvailable(status, interval))  updateData(server.getIp(), status);
-        sessionFactory.getCurrentSession().update(status);
-        //serverDAO.update(server);
+        if(isUpdateAvailable(status, interval))
+            updateData(server.getIp(), status);
+        //sessionFactory.getCurrentSession().update(status);
+        serverDAO.update(server);
         return status;
     }
 
