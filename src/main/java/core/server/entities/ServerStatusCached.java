@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import core.enums.ServerStatus;
 import core.utils.DateUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -21,6 +18,7 @@ public class ServerStatusCached {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
+    @Enumerated(EnumType.STRING)
     ServerStatus status;
     String revision;
     Date revisionDate;
