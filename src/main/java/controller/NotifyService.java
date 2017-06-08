@@ -74,6 +74,17 @@ public class NotifyService {
         emitters.removeAll(toDelete);
     }
 
+
+    /** Send SSE response with server's status or detail info (in case of notifyDetailInfo method).
+     * Response is a jason object where:
+     * {
+     *   type: operation type,
+     *   msg: {
+     *      server_id: Server id,
+     *      server_status: Servers's status object,
+     *      }
+     * }
+     * **/
     public void notifyStatus(Server server){
         List<SseEmitter> toDelete = new ArrayList<>();
         for(SseEmitter emitter : emitters){

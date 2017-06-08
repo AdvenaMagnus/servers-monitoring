@@ -128,7 +128,7 @@ function statusesConf($scope, serversFactory, $http){
 	};
 
 	$scope.colorStatus = function(server) {
-		if(typeof server.serverStatusCached != 'undefined') {
+		if(server.serverStatusCached != null) {
             if (server.serverStatusCached.status == 'online') return 'success';
             if (server.serverStatusCached.status == 'offline') return 'danger';
             if (server.serverStatusCached.ping == 'нет') return 'warning';
@@ -153,9 +153,8 @@ function statusesConf($scope, serversFactory, $http){
     $scope.clearServerData = function(s){
         s.ping = null;
         s.status = null;
-        s.revision = null;
-        s.revisionDate = null;
-        s.lastUpdateDays = null;
+        s.serverStatusCached = null;
+        s.detailInfo = null;
     };
 
     $scope.formatIntForTime = function (num) {

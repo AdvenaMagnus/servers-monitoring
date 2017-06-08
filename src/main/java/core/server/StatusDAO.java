@@ -1,10 +1,12 @@
 package core.server;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.Cookie;
 import core.enums.ServerStatus;
 import core.server.entities.Server;
 import core.server.entities.ServerStatusCached;
@@ -13,12 +15,14 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +40,16 @@ public class StatusDAO {
 
     @Autowired
     SessionFactory sessionFactory;
+
+    @Autowired
+    @Qualifier("sessionIds")
+    HashMap<String, Cookie> sessionIds;
+
+    @Bean
+    @Qualifier("sessionIds")
+    private HashMap<String, Cookie> getSessionsIds(){
+        return new HashMap<String, Cookie>();
+    }
 
     /** Update status of server if last update was more than interval minutes ago*/
     public ServerStatusCached updateStatus(Server server, int interval){
@@ -112,9 +126,23 @@ public class StatusDAO {
             webClient.getOptions().setThrowExceptionOnScriptError(false);
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
             webClient.getOptions().setTimeout(9000);
+
+            CookieManager cookieMan = webClient.getCookieManager();
+            cookieMan.setCookiesEnabled(true);
+
+            Cookie savedCookie = sessionIds.get(url);
+            if(savedCookie!=null)
+                cookieMan.addCookie(savedCookie);
+
             //HtmlPage myPage = ((HtmlPage) webClient.getPage("http://" + this.getIp()+secondUrl));
             //HtmlPage resultPage = ((HtmlPage) webClient.getPage(url+"/faces/muncontrol/pages/login.jspx"));
             HtmlPage resultPage = webClient.getPage(url);
+
+            for(Cookie cookie : cookieMan.getCookies()){
+                if(cookie.getName().equals("JSESSIONID"))
+                    sessionIds.put(url, cookie);
+            }
+
             //webClient.waitForBackgroundJavaScript(8000);
             return resultPage;
         }
