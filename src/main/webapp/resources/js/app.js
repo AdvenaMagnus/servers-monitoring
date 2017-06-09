@@ -14,7 +14,8 @@ monitoringModule.controller('mainController', function($scope, $http, serversFac
 
 	/**Fetch servers list*/
 	if(serversFactory.servers == null){
-		$http.get('/servers/light').then(function(response){
+		//$http.get('/servers/light').then(function(response){
+		$http.get('/servers').then(function(response){
 			serversFactory.servers = response.data;
 			$scope.servers = serversFactory.servers;
 		}, function(){
@@ -43,18 +44,16 @@ monitoringModule.controller('mainController', function($scope, $http, serversFac
 		});
 	};
 
+	var serversManupaulationFuncs = {};
 	CRUDconf($scope, $http, serversFactory);
 	statusesConf($scope, serversFactory, $http);
-	SSEconf($scope, serversFactory);
-	detailInfoconf($scope, $http);
+	SSEconf($scope, serversFactory, serversManupaulationFuncs);
+	detailInfoconf($scope, $http, serversManupaulationFuncs);
 	timerConf($scope, $timeout);
-
-
-
 });
 
 /**Logic for server detail info */
-function detailInfoconf($scope, $http){
+function detailInfoconf($scope, $http, serversManupaulationFuncs){
     $scope.showInfo = function(server){
         if(typeof server.isInfoAvail == 'undefined'){
             server.isInfoAvail = true;
@@ -64,11 +63,14 @@ function detailInfoconf($scope, $http){
         $('#info-tr-'+server.id).slideToggle();
         $('#info-area-'+server.id).slideToggle();
 
-        $http.get("/servers/detailinfo/" + server.id).then(function(response){
-            console.log("recieving server detailinfo")
-        }, function(){
-            console.log("Error recieving server detailinfo")
-        });
+        if(server.isInfoAvail) {
+            $http.get("/servers/detailinfo/" + server.id).then(function (response) {
+                console.log("recieving server detailinfo");
+                serversManupaulationFuncs.updateDetailInfo(response.data);
+            }, function () {
+                console.log("Error recieving server detailinfo")
+            });
+        }
     };
 
     $scope.detailInfoOpenImg = function (server) {
@@ -152,9 +154,10 @@ function statusesConf($scope, serversFactory, $http){
     /**Clear status data on server*/
     $scope.clearServerData = function(s){
         s.ping = null;
-        s.status = null;
-        s.serverStatusCached = null;
-        s.detailInfo = null;
+        //s.status = null;
+		if(typeof s.serverStatusCached != 'undefined')
+        	s.serverStatusCached.status = null;
+        //s.detailInfo = null;
     };
 
     $scope.formatIntForTime = function (num) {
@@ -183,50 +186,52 @@ function timerConf($scope, $timeout){
 }
 
 /**SSE configuration*/
-function SSEconf($scope, serversFactory){
+function SSEconf($scope, serversFactory, serversManupaulationFuncs){
     var sourceDelete = new EventSource('/sse/servers');
     sourceDelete.onmessage = function (event) {
         console.log(event);
         var dataParsed = serversFactory.parseJson(event.data);
-        switch(dataParsed.type){
-			case 'delete':
-                deleteServer(dataParsed.msg);
-                break;
-			case 'update':
-                updateServer(dataParsed.msg);
-                break;
-			case 'status':
-                statusUpdate(dataParsed.msg);
-                break;
-			case 'detailinfo':
-                updateDetailInfo(dataParsed.msg);
-                break;
-		}
+        $scope.$apply(function () {
+            switch (dataParsed.type) {
+                case 'delete':
+                    serversManupaulationFuncs.deleteServer(dataParsed.msg);
+                    break;
+                case 'update':
+                    serversManupaulationFuncs.updateServer(dataParsed.msg);
+                    break;
+                case 'status':
+                    serversManupaulationFuncs.statusUpdate(dataParsed.msg);
+                    break;
+                case 'detailinfo':
+                    serversManupaulationFuncs.updateDetailInfo(dataParsed.msg);
+                    break;
+            }
+        })
     };
     sourceDelete.onerror = function (event) {
         console.log('sse delete error');
     };
 
-	var deleteServer = function (data) {
-        $scope.$apply(function(){
+    serversManupaulationFuncs.deleteServer = function (data) {
+        //$scope.$apply(function(){
             serversFactory.servers = $.grep(serversFactory.servers, function (value) {
                 return value.id != data;
             });
             $scope.servers = serversFactory.servers;
-        })
+        //})
     };
 
-	var updateServer = function(data){
-        $scope.$apply(function(){
+    serversManupaulationFuncs.updateServer = function(data){
+        //$scope.$apply(function(){
             var parsedServer = data;
             console.log(parsedServer);
-            $scope.updateServerLocal(serversFactory.servers, parsedServer);
+        	$scope.updateServerLocal(serversFactory.servers, parsedServer);
             $scope.servers = serversFactory.servers;
-        })
+        //})
 	};
 
-    var statusUpdate = function (data) {
-        $scope.$apply(function(){
+    serversManupaulationFuncs.statusUpdate = function (data) {
+        //$scope.$apply(function(){
             //var parsedStatus = serversFactory.parseJson(data);
             var parsedStatus = data;
             var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.server_id)];
@@ -237,18 +242,18 @@ function SSEconf($scope, serversFactory){
                         new Date(serversFactory.formatDate($scope.currentDate)),
                         new Date(serversFactory.formatDate(serverLocal.serverStatusCached.revisionDate)));
             }
-        })
+        //})
     };
 
-	var updateDetailInfo = function (data) {
-        $scope.$apply(function(){
+    serversManupaulationFuncs.updateDetailInfo = function (data) {
+        //$scope.$apply(function(){
             //var parsedStatus = serversFactory.parseJson(data);
             var parsedStatus = data;
             var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.server_id)];
             if(typeof serverLocal != 'undefined'){
                 serverLocal.detailInfo = parsedStatus.detailInfo;
             }
-        })
+        //})
     }
 
 }
@@ -271,6 +276,7 @@ function CRUDconf($scope, $http, serversFactory){
 			var serverFound = array[index];
             serverFound.name = server.name;
             serverFound.ip = server.ip;
+            serverFound.notices = server.notices;
             if(server.detailInfo!=null){
                 serverFound.detailInfo.systemLogin = server.detailInfo.systemLogin;
                 serverFound.detailInfo.systemPassword = server.detailInfo.systemPassword;

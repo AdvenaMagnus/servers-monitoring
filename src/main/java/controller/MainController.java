@@ -57,8 +57,8 @@ public class MainController {
 	public ResponseEntity<ServerDetailInfo> serverDetailInfo(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(server !=null){
-			notifyService.notifyDetailInfo(server);
-			return new ResponseEntity(HttpStatus.OK);
+			//notifyService.notifyDetailInfo(server);
+			return new ResponseEntity(notifyService.detailInfoMsg(server).get("msg"), HttpStatus.OK);
 		}
 		else return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
@@ -99,8 +99,8 @@ public class MainController {
 
 	@RequestMapping(path = "/servers/update", method = RequestMethod.POST)
 	public ResponseEntity<Server> updateServer(@RequestBody Server server){
-		//TODO solve problem if server comes w/o status but status exists in db
 		Server serv = serverDao.update(server);
+		notifyService.notifyAboutUpdate(server);
 		if(serv!=null) return new ResponseEntity(serv, HttpStatus.OK);
 		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 	}

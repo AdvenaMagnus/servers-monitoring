@@ -89,14 +89,7 @@ public class NotifyService {
         List<SseEmitter> toDelete = new ArrayList<>();
         for(SseEmitter emitter : emitters){
             try {
-                HashMap<String, Object> msg = new HashMap<>();
-                msg.put("server_id", server.getId());
-                msg.put("server_status", server.getServerStatusCached());
-
-                HashMap<String, Object> toSend = new HashMap<>();
-                toSend.put("type", "status");
-                toSend.put("msg", msg);
-                emitter.send(toSend, MediaType.APPLICATION_JSON_UTF8);
+                emitter.send(statusMsg(server), MediaType.APPLICATION_JSON_UTF8);
             } catch (Exception e) {
                 System.out.println("emitter status error");
                 toDelete.add(emitter);
@@ -109,14 +102,7 @@ public class NotifyService {
         List<SseEmitter> toDelete = new ArrayList<>();
         for(SseEmitter emitter : emitters){
             try {
-                HashMap<String, Object> msg = new HashMap<>();
-                msg.put("server_id", server.getId());
-                msg.put("detailInfo", server.getDetailInfo());
-
-                HashMap<String, Object> toSend = new HashMap<>();
-                toSend.put("type", "detailinfo");
-                toSend.put("msg", msg);
-                emitter.send(toSend, MediaType.APPLICATION_JSON_UTF8);
+                emitter.send(detailInfoMsg(server), MediaType.APPLICATION_JSON_UTF8);
             } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println("emitter detail info error");
@@ -124,6 +110,28 @@ public class NotifyService {
             }
         }
         emitters.removeAll(toDelete);
+    }
+
+    public HashMap<String, Object> statusMsg(Server server){
+        HashMap<String, Object> msg = new HashMap<>();
+        msg.put("server_id", server.getId());
+        msg.put("server_status", server.getServerStatusCached());
+
+        HashMap<String, Object> toSend = new HashMap<>();
+        toSend.put("type", "status");
+        toSend.put("msg", msg);
+        return toSend;
+    }
+
+    public HashMap<String, Object> detailInfoMsg(Server server){
+        HashMap<String, Object> msg = new HashMap<>();
+        msg.put("server_id", server.getId());
+        msg.put("detailInfo", server.getDetailInfo());
+
+        HashMap<String, Object> toSend = new HashMap<>();
+        toSend.put("type", "detailinfo");
+        toSend.put("msg", msg);
+        return toSend;
     }
 
 }

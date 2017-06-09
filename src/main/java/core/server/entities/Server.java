@@ -34,6 +34,7 @@ public class Server {
 	long id;
 	String name;
 	String ip;
+	String notices;
 	@OneToOne
 	@Cascade({org.hibernate.annotations.CascadeType.ALL})
 	ServerDetailInfo detailInfo;
@@ -62,6 +63,13 @@ public class Server {
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public String getNotices() {
+		return notices;
+	}
+	public void setNotices(String notices) {
+		this.notices = notices;
 	}
 
 	//@JsonIgnore

@@ -27,6 +27,7 @@
 			<th style="width:100px;"> Ревизия</th>
 			<th style="width:150px;">Дата ревизии</th>
 			<%--<th style="width:150px;"> Дней после обновления</th>--%>
+			<th style="width:200px;">Примечания</th>
 			<th style="width:150px;"><a href ng-click="updateAllNow()">Обновить все</a></th>
 			<th style="width:100px;"></th>
 			<th style="width:30px;"></th>
@@ -47,6 +48,7 @@
 				</br>
 				<span style="color:darkgrey; font-size:9px;">{{formatIntForTime(server.serverStatusCached.hours)}}:{{formatIntForTime(server.serverStatusCached.min)}} {{server.serverStatusCached.date}}</span>
 			</td>
+			<td style="white-space: pre-wrap;">{{server.notices}}</td>
 			<td ng-init="updateServer(server)"><a href  ng-click="updateServer(server)">Обновить статус</a></td>
 			<td><a href="http://{{server.ip}}" target="_blank">Перейти</a></td>
 			<td><a href ng-click="deleteServer(server, $index)">X</a></td>
@@ -72,7 +74,7 @@
 			</td>
 		</tr>
 		<tr  class="table table-striped">
-			<td colspan="9">
+			<td colspan="10">
 				<span style="padding-right:10px;">Автообновление статусов</span>
 				<input type="checkbox" ng-model="isAutoUpdate" name="Включить автообновление" ng-click="goAutoUpdate()"/>
 				<span style="padding-left:10px;" ng-show="isAutoUpdate==true">интервал, сек.</span>
