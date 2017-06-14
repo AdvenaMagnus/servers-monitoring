@@ -155,8 +155,10 @@ function statusesConf($scope, serversFactory, $http){
     $scope.clearServerData = function(s){
         s.ping = null;
         //s.status = null;
-		if(typeof s.serverStatusCached != 'undefined')
-        	s.serverStatusCached.status = null;
+        if(typeof s.serverStatusCached != 'undefined'){
+            s.serverStatusCached.lastStatus = s.serverStatusCached.status;
+            s.serverStatusCached.status = null;
+		}
         //s.detailInfo = null;
     };
 
@@ -214,17 +216,25 @@ function SSEconf($scope, serversFactory, serversManupaulationFuncs){
 
     serversManupaulationFuncs.deleteServer = function (data) {
         //$scope.$apply(function(){
-            serversFactory.servers = $.grep(serversFactory.servers, function (value) {
-                return value.id != data;
+		var serverToDelete = $scope.servers[$scope.findServerIndexById($scope.servers, data)];
+		if(typeof serverToDelete != 'undefined') {
+            new Notification('Сервер ' + serverToDelete.name + ' удален', {
+                tag: "delete-server",
+                body: serverToDelete.ip,
+                icon: "/images/favicon_servers.ico"
             });
-            $scope.servers = serversFactory.servers;
+        }
+        serversFactory.servers = $.grep(serversFactory.servers, function (value) {
+            return value.id != data;
+        });
+        $scope.servers = serversFactory.servers;
         //})
     };
 
     serversManupaulationFuncs.updateServer = function(data){
         //$scope.$apply(function(){
             var parsedServer = data;
-            console.log(parsedServer);
+            //console.log(parsedServer);
         	$scope.updateServerLocal(serversFactory.servers, parsedServer);
             $scope.servers = serversFactory.servers;
         //})
@@ -236,6 +246,13 @@ function SSEconf($scope, serversFactory, serversManupaulationFuncs){
             var parsedStatus = data;
             var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.server_id)];
             if(typeof serverLocal != 'undefined'){
+            	if(typeof serverLocal.serverStatusCached!= 'undefined' && serverLocal.serverStatusCached.lastStatus!=null && serverLocal.serverStatusCached.lastStatus != parsedStatus.server_status.status){
+                    new Notification(serverLocal.name, {
+                        tag : "new-status",
+                        body : "Статус: " + parsedStatus.server_status.status,
+                        icon: "/images/favicon_servers.ico"
+                    });
+				}
                 serverLocal.serverStatusCached = parsedStatus.server_status;
                 if(typeof serverLocal.serverStatusCached.revisionDate != 'undefined' && serverLocal.serverStatusCached.revisionDate != null)
                     serverLocal.lastUpdateDays = serversFactory.daysBetweenDates(

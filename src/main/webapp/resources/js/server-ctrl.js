@@ -26,6 +26,11 @@ monitoringModule.controller('serverCtrl', function($scope, $uibModalInstance, se
             var callback = function(server){
                 //serversScope.servers.push(server);
                 //serversScope.updateServerLocal(serversFactory.servers, server);
+                new Notification('Новый сервер', {
+                    tag : "new-server",
+                    body : server.name,
+                    icon: "/images/favicon_servers.ico"
+                });
                 $uibModalInstance.close($scope.server);
             };
             serversScope.createServer($scope.server, callback);
