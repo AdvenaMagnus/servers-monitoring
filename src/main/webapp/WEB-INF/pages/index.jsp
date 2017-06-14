@@ -73,14 +73,14 @@
 				</div>
 			</td>
 		</tr>
-		<tr  class="table table-striped">
-			<td colspan="10">
-				<span style="padding-right:10px;">Автообновление статусов</span>
-				<input type="checkbox" ng-model="isAutoUpdate" name="Включить автообновление" ng-click="goAutoUpdate()"/>
-				<span style="padding-left:10px;" ng-show="isAutoUpdate==true">интервал, сек.</span>
-				<input style="width:40px" type="text" ng-model="timeOutUpdateS" ng-show="isAutoUpdate==true" />
-			</td>
-		</tr>
+		<%--<tr  class="table table-striped">--%>
+			<%--<td colspan="10">--%>
+				<%--<span style="padding-right:10px;">Автообновление статусов</span>--%>
+				<%--<input type="checkbox" ng-model="isAutoUpdate" name="Включить автообновление" ng-click="goAutoUpdate()"/>--%>
+				<%--<span style="padding-left:10px;" ng-show="isAutoUpdate==true">интервал, сек.</span>--%>
+				<%--<input style="width:40px" type="text" ng-model="timeOutUpdateS" ng-show="isAutoUpdate==true" />--%>
+			<%--</td>--%>
+		<%--</tr>--%>
 	</table>
 	<div style="text-align: center"><a href ng-click="openPopup()">Добавить сервер</a></div>
 </div>

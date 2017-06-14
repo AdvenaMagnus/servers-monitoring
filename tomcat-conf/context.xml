@@ -33,7 +33,7 @@
     -->
 
     <Environment name="driver_class_name" type="java.lang.String" value="org.postgresql.Driver" />
-    <Environment name="url" type="java.lang.String" value="jdbc:postgresql://localhost:5433/servers_monitoring_empty" />
+    <Environment name="url" type="java.lang.String" value="jdbc:postgresql://localhost:5432/servers_monitoring_empty" />
     <Environment name="username" type="java.lang.String" value="postgres" />
     <Environment name="password" type="java.lang.String" value="" />
 

@@ -170,21 +170,23 @@ function statusesConf($scope, serversFactory, $http){
 
 /**Configurations for statuses auto update*/
 function timerConf($scope, $timeout){
-	$scope.isAutoUpdate = false;
-	$scope.timeOutUpdateS = 10;
-	var currentTimer;
-	$scope.goAutoUpdate = function(){
-		if($scope.isAutoUpdate) {
-			currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
-		} else $timeout.cancel(currentTimer);
-	};
+    $scope.runTimeOut = function () {
+        console.log('timer update');
+        $scope.updateAllNow();
+        if ($scope.isAutoUpdate)
+            currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS * 1000);
+    };
 
-	$scope.runTimeOut = function () {
-		console.log('timer update');
-		$scope.updateAllNow();
-		if ($scope.isAutoUpdate)
-			currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS * 1000);
-	};
+	$scope.isAutoUpdate = true; //= false;
+	$scope.timeOutUpdateS = 120;
+	var currentTimer;
+    currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
+	// $scope.goAutoUpdate = function(){
+	// 	if($scope.isAutoUpdate) {
+	// 		currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
+	// 	} else $timeout.cancel(currentTimer);
+	// };
+
 }
 
 /**SSE configuration*/
@@ -248,7 +250,7 @@ function SSEconf($scope, serversFactory, serversManupaulationFuncs){
             if(typeof serverLocal != 'undefined'){
             	if(typeof serverLocal.serverStatusCached!= 'undefined' && serverLocal.serverStatusCached.lastStatus!=null && serverLocal.serverStatusCached.lastStatus != parsedStatus.server_status.status){
                     new Notification(serverLocal.name, {
-                        tag : "new-status",
+                        tag : "new-status-"+serverLocal.name,
                         body : "Статус: " + parsedStatus.server_status.status,
                         icon: "/images/favicon_servers.ico"
                     });
