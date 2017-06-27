@@ -39,11 +39,11 @@ public class NotifyService {
 
     public void notifyAboutDelete(Server server){
         List<SseEmitter> toDelete = new ArrayList<>();
+        HashMap<String, Object> toSend = new HashMap<>();
+        toSend.put("type", "delete");
+        toSend.put("msg", server.getId());
         for(SseEmitter emitter : emitters){
             try {
-                HashMap<String, Object> toSend = new HashMap<>();
-                toSend.put("type", "delete");
-                toSend.put("msg", server.getId());
                 emitter.send(toSend, MediaType.APPLICATION_JSON_UTF8);
                 //emitter.send(server);
             } catch (Exception e) {
@@ -52,16 +52,18 @@ public class NotifyService {
                 toDelete.add(emitter);
             }
         }
-        emitters.removeAll(toDelete);
+        synchronized (emitters) {
+            emitters.removeAll(toDelete);
+        }
     }
 
     public void notifyAboutUpdate(Server server){
         List<SseEmitter> toDelete = new ArrayList<>();
+        HashMap<String, Object> toSend = new HashMap<>();
+        toSend.put("type", "update");
+        toSend.put("msg", server);
         for(SseEmitter emitter : emitters){
             try {
-                HashMap<String, Object> toSend = new HashMap<>();
-                toSend.put("type", "update");
-                toSend.put("msg", server);
                 emitter.send(toSend, MediaType.APPLICATION_JSON_UTF8);
                 //emitter.send(server, MediaType.APPLICATION_JSON_UTF8);
                 //emitter.send(server);
@@ -71,7 +73,9 @@ public class NotifyService {
                 toDelete.add(emitter);
             }
         }
-        emitters.removeAll(toDelete);
+        synchronized (emitters) {
+            emitters.removeAll(toDelete);
+        }
     }
 
 
@@ -87,29 +91,35 @@ public class NotifyService {
      * **/
     public void notifyStatus(Server server){
         List<SseEmitter> toDelete = new ArrayList<>();
+        HashMap<String, Object> statusMsg = statusMsg(server);
         for(SseEmitter emitter : emitters){
             try {
-                emitter.send(statusMsg(server), MediaType.APPLICATION_JSON_UTF8);
+                emitter.send(statusMsg, MediaType.APPLICATION_JSON_UTF8);
             } catch (Exception e) {
                 System.out.println("emitter status error");
                 toDelete.add(emitter);
             }
         }
-        emitters.removeAll(toDelete);
+        synchronized (emitters) {
+            emitters.removeAll(toDelete);
+        }
     }
 
     public void notifyDetailInfo(Server server){
         List<SseEmitter> toDelete = new ArrayList<>();
+        HashMap<String, Object> detailInfoMsg = detailInfoMsg(server);
         for(SseEmitter emitter : emitters){
             try {
-                emitter.send(detailInfoMsg(server), MediaType.APPLICATION_JSON_UTF8);
+                emitter.send(detailInfoMsg, MediaType.APPLICATION_JSON_UTF8);
             } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println("emitter detail info error");
                 toDelete.add(emitter);
             }
         }
-        emitters.removeAll(toDelete);
+        synchronized (emitters) {
+            emitters.removeAll(toDelete);
+        }
     }
 
     public HashMap<String, Object> statusMsg(Server server){

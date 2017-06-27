@@ -1,6 +1,7 @@
 package core.server;
 
 import core.server.entities.Server;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -23,16 +27,19 @@ public class ServerDAOHib implements ServerDAO{
 
 	@Override
 	public List<Server> allServers() {
-		List<Server> result = (List<Server>) sessionFactory.getCurrentSession()
-						.createCriteria(Server.class).list();
-		return result;
+//		List<Server> result = (List<Server>) sessionFactory.getCurrentSession()
+//						.createCriteria(Server.class).list();
+		CriteriaBuilder builder =  sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Server> criteria = builder.createQuery(Server.class);
+		Root<Server> contactRoot = criteria.from(Server.class);
+		return sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
 	}
 
 	@Override
 	public Server serverById(long id) {
-		Server server = (Server) sessionFactory.getCurrentSession()
-						.createCriteria(Server.class).add(Restrictions.eq("id", id)).uniqueResult();
-		return server;
+//		Server server = (Server) sessionFactory.getCurrentSession()
+//						.createCriteria(Server.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return sessionFactory.getCurrentSession().get(Server.class, id);
 	}
 
 	@Override

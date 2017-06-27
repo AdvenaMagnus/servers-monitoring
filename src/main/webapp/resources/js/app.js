@@ -49,7 +49,7 @@ monitoringModule.controller('mainController', function($scope, $http, serversFac
 	statusesConf($scope, serversFactory, $http);
 	SSEconf($scope, serversFactory, serversManupaulationFuncs);
 	detailInfoconf($scope, $http, serversManupaulationFuncs);
-	timerConf($scope, $timeout);
+	//timerConf($scope, $timeout);
 });
 
 /**Logic for server detail info */
@@ -169,25 +169,25 @@ function statusesConf($scope, serversFactory, $http){
 
 
 /**Configurations for statuses auto update*/
-function timerConf($scope, $timeout){
-    $scope.runTimeOut = function () {
-        console.log('timer update');
-        $scope.updateAllNow();
-        if ($scope.isAutoUpdate)
-            currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS * 1000);
-    };
-
-	$scope.isAutoUpdate = true; //= false;
-	$scope.timeOutUpdateS = 120;
-	var currentTimer;
-    currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
-	// $scope.goAutoUpdate = function(){
-	// 	if($scope.isAutoUpdate) {
-	// 		currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
-	// 	} else $timeout.cancel(currentTimer);
-	// };
-
-}
+// function timerConf($scope, $timeout){
+//     $scope.runTimeOut = function () {
+//         console.log('timer update');
+//         $scope.updateAllNow();
+//         if ($scope.isAutoUpdate)
+//             currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS * 1000);
+//     };
+//
+// 	$scope.isAutoUpdate = true; //= false;
+// 	$scope.timeOutUpdateS = 120;
+// 	var currentTimer;
+//     currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
+// 	// $scope.goAutoUpdate = function(){
+// 	// 	if($scope.isAutoUpdate) {
+// 	// 		currentTimer = $timeout($scope.runTimeOut, $scope.timeOutUpdateS*1000);
+// 	// 	} else $timeout.cancel(currentTimer);
+// 	// };
+//
+// }
 
 /**SSE configuration*/
 function SSEconf($scope, serversFactory, serversManupaulationFuncs){

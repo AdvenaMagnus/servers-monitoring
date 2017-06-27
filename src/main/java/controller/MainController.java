@@ -46,7 +46,7 @@ public class MainController {
 	public ResponseEntity<ServerStatusCached> serverStatus(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(server !=null){
-			statusDAO.updateStatus(server, 2);
+			statusDAO.updateStatus(server);
 			notifyService.notifyStatus(server);
 			return new ResponseEntity(HttpStatus.OK);
 		}

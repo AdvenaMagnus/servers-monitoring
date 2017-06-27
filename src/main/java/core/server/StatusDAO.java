@@ -52,7 +52,7 @@ public class StatusDAO {
     }
 
     /** Update status of server if last update was more than interval minutes ago*/
-    public ServerStatusCached updateStatus(Server server, int interval){
+    public ServerStatusCached updateStatus(Server server){
         ServerStatusCached status;
         if(server.getServerStatusCached()==null){
             status = new ServerStatusCached();
@@ -61,8 +61,7 @@ public class StatusDAO {
         }
         else status = server.getServerStatusCached();
 
-        if(isUpdateAvailable(status, interval))
-            updateData(server.getIp(), status);
+        if(isUpdateAvailable(status, AutoupdateTimer.updateInterval)) updateData(server.getIp(), status);
         //sessionFactory.getCurrentSession().update(status);
         serverDAO.update(server);
         return status;
@@ -85,7 +84,7 @@ public class StatusDAO {
             else status.setStatus(ServerStatus.offline);
         } catch (Exception e) {
             //e.printStackTrace();
-            System.out.println("updateData exeption");
+            System.out.println("updateData exception");
             status.setStatus(ServerStatus.offline);
         }
         return revisionInfo;
