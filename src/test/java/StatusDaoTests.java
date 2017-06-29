@@ -1,3 +1,4 @@
+import core.enums.ServerStatus;
 import core.server.AutoupdateTimer;
 import core.server.StatusDAO;
 import core.server.entities.Server;
@@ -99,6 +100,7 @@ public class StatusDaoTests {
 		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
 		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+
 		assertTrue(serverStatusCached!=null);
 		assertTrue(serverStatusCached.getRevision().equals(revisionAndDate[0]));
 		assertTrue(serverStatusCached.getRevisionDate()!=null);
@@ -119,11 +121,29 @@ public class StatusDaoTests {
 		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
 		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+
 		assertTrue(serverStatusCached!=null);
 		assertTrue(serverStatusCached.getRevision()==null);
 		assertTrue(serverStatusCached.getRevisionDate()==null);
 		assertTrue(serverStatusCached.getIsClosed()==true);
 		assertTrue(serverStatusCached.getOwner()==server);
+	}
+
+	/**
+	 * 5) Current server offline, last status exists and status.isClosed == false, last update was less that interval minutes ago
+	 * return last status
+	 * */
+	@Test
+	public void test5(){
+		status.setIsClosed(false);
+		doReturn(status).when(statusDAO).getLastStatus(server);
+		doReturn(false).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
+
+		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+
+		assertTrue(serverStatusCached!=null);
+		assertTrue(serverStatusCached==status);
+		assertTrue(serverStatusCached.getStatus() == ServerStatus.online);
 	}
 
 }

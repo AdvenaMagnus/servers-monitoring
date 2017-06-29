@@ -244,25 +244,28 @@ function SSEconf($scope, serversFactory, serversManupaulationFuncs){
 
     serversManupaulationFuncs.statusUpdate = function (data) {
         //$scope.$apply(function(){
-            //var parsedStatus = serversFactory.parseJson(data);
-            var parsedStatus = data;
-            var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.server_id)];
-            if(typeof serverLocal != 'undefined'){
-            	if(typeof serverLocal.serverStatusCached!= 'undefined' && serverLocal.serverStatusCached.lastStatus!=null && serverLocal.serverStatusCached.lastStatus != parsedStatus.server_status.status){
+        //var parsedStatus = serversFactory.parseJson(data);
+        var parsedStatus = data;
+        var serverLocal = $scope.servers[$scope.findServerIndexById($scope.servers, parsedStatus.server_id)];
+        if (typeof serverLocal != 'undefined') {
+            if (typeof serverLocal.serverStatusCached != 'undefined') {
+                if (serverLocal.serverStatusCached.status != null)
+                    serverLocal.serverStatusCached.lastStatus = serverLocal.serverStatusCached.status;
+                if (serverLocal.serverStatusCached.lastStatus != null && serverLocal.serverStatusCached.lastStatus != parsedStatus.server_status.status) {
                     new Notification(serverLocal.name, {
-                        tag : "new-status-"+serverLocal.name,
-                        body : "Статус: " + parsedStatus.server_status.status,
+                        tag: "new-status-" + serverLocal.name,
+                        body: "Статус: " + parsedStatus.server_status.status,
                         icon: "/images/favicon_servers.ico"
                     });
-				}
-                serverLocal.serverStatusCached = parsedStatus.server_status;
-                if(typeof serverLocal.serverStatusCached.revisionDate != 'undefined' && serverLocal.serverStatusCached.revisionDate != null)
-                    serverLocal.lastUpdateDays = serversFactory.daysBetweenDates(
-                        new Date(serversFactory.formatDate($scope.currentDate)),
-                        new Date(serversFactory.formatDate(serverLocal.serverStatusCached.revisionDate)));
+                }
             }
-        //})
-    };
+        }
+        serverLocal.serverStatusCached = parsedStatus.server_status;
+        if (typeof serverLocal.serverStatusCached.revisionDate != 'undefined' && serverLocal.serverStatusCached.revisionDate != null)
+            serverLocal.lastUpdateDays = serversFactory.daysBetweenDates(
+                new Date(serversFactory.formatDate($scope.currentDate)),
+                new Date(serversFactory.formatDate(serverLocal.serverStatusCached.revisionDate)));
+    }
 
     serversManupaulationFuncs.updateDetailInfo = function (data) {
         //$scope.$apply(function(){
