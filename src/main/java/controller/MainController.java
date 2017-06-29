@@ -28,7 +28,6 @@ import java.util.*;
 public class MainController {
 
 	@Autowired
-	@Qualifier("server_dao_persist")
 	ServerDAO serverDao;
 
 	@Autowired
@@ -46,8 +45,8 @@ public class MainController {
 	public ResponseEntity<ServerStatusCached> serverStatus(@PathVariable("serverId") long id) throws Exception {
 		Server server = serverDao.serverById(id);
 		if(server !=null){
-			statusDAO.updateStatus(server);
-			notifyService.notifyStatus(server);
+			ServerStatusCached status = statusDAO.updateStatus(server);
+			notifyService.notifyStatus(status);
 			return new ResponseEntity(HttpStatus.OK);
 		}
 		else return new ResponseEntity(HttpStatus.NOT_FOUND);

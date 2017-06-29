@@ -1,5 +1,6 @@
 package controller;
 
+import core.enums.ServerStatus;
 import core.server.entities.Server;
 import core.server.entities.ServerStatusCached;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,19 +90,21 @@ public class NotifyService {
      *      }
      * }
      * **/
-    public void notifyStatus(Server server){
-        List<SseEmitter> toDelete = new ArrayList<>();
-        HashMap<String, Object> statusMsg = statusMsg(server);
-        for(SseEmitter emitter : emitters){
-            try {
-                emitter.send(statusMsg, MediaType.APPLICATION_JSON_UTF8);
-            } catch (Exception e) {
-                System.out.println("emitter status error");
-                toDelete.add(emitter);
+    public void notifyStatus(ServerStatusCached status){
+        if(status!=null) {
+            List<SseEmitter> toDelete = new ArrayList<>();
+            HashMap<String, Object> statusMsg = statusMsg(status);
+            for (SseEmitter emitter : emitters) {
+                try {
+                    emitter.send(statusMsg, MediaType.APPLICATION_JSON_UTF8);
+                } catch (Exception e) {
+                    System.out.println("emitter status error");
+                    toDelete.add(emitter);
+                }
             }
-        }
-        synchronized (emitters) {
-            emitters.removeAll(toDelete);
+            synchronized (emitters) {
+                emitters.removeAll(toDelete);
+            }
         }
     }
 
@@ -122,10 +125,10 @@ public class NotifyService {
         }
     }
 
-    public HashMap<String, Object> statusMsg(Server server){
+    public HashMap<String, Object> statusMsg(ServerStatusCached status){
         HashMap<String, Object> msg = new HashMap<>();
-        msg.put("server_id", server.getId());
-        msg.put("server_status", server.getServerStatusCached());
+        msg.put("server_id", status.getOwner().getId());
+        msg.put("server_status", status);
 
         HashMap<String, Object> toSend = new HashMap<>();
         toSend.put("type", "status");

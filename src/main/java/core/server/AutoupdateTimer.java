@@ -2,6 +2,7 @@ package core.server;
 
 import controller.NotifyService;
 import core.server.entities.Server;
+import core.server.entities.ServerStatusCached;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,13 +16,12 @@ import org.springframework.stereotype.Service;
 @Configurable
 public class AutoupdateTimer implements Runnable{
 
-	static final int updateInterval = 2;
+	public static final int updateInterval = 2;
 
 	@Autowired
 	StatusDAO statusDAO;
 
 	@Autowired
-	@Qualifier("server_dao_persist")
 	ServerDAO serverDAO;
 
 	@Autowired
@@ -40,8 +40,8 @@ public class AutoupdateTimer implements Runnable{
 //						statusDAO.updateStatus(server);
 //						notifyService.notifyStatus(server);
 //					}).start();
-					statusDAO.updateStatus(server);
-					notifyService.notifyStatus(server);
+					ServerStatusCached status = statusDAO.updateStatus(server);
+					notifyService.notifyStatus(status);
 				}
 				System.out.println("Autoupdate servers finished");
 

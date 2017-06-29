@@ -15,7 +15,7 @@
 	<script src="/js/services.js"></script>
 	<script src="/js/server-ctrl.js"></script>
 </head>
-<body ng-app="main">
+<body ng-app="main" class="bgcolor">
 <h1 style="padding-left: 20px;text-align: center">Мониторинг серверов</h1>
 <div ng-controller="mainController">
 	<h4 style="padding-left: 20px;text-align: center"><a href ng-click="updateAllNow()" style="text-align: center">Обновить все</a></h4>

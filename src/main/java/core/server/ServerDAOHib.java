@@ -19,7 +19,6 @@ import java.util.List;
  */
 @Service
 @Transactional
-@Qualifier("server_dao_persist")
 public class ServerDAOHib implements ServerDAO{
 
 	@Autowired
@@ -57,37 +56,20 @@ public class ServerDAOHib implements ServerDAO{
 	}
 
 	@Override
+	public void refresh(Server server) {
+		 sessionFactory.getCurrentSession().refresh(server);
+	}
+
+//	@Override
+//	public void clear() {
+//		sessionFactory.getCurrentSession().clear();
+//	}
+
+	@Override
 	public boolean delete(Server server) {
 		sessionFactory.getCurrentSession().delete(server);
 		//notifyAboutDelete(server);
 		return true;
 	}
-
-//	public SystemInfo getSystemInfo(Server server){
-//		SystemInfo sysInfo = new SystemInfo(server);
-//		if(sysInfo!=null){
-//			if(sysInfo.getRevision()!=null && sysInfo.getRevisionDate()!=null) {
-//				//TODO
-////				server.setLastUpdateRevision(sysInfo.getRevision());
-////				server.setLastUpdateRevisionDate(sysInfo.getRevisionDate());
-////				server.setLastUpdateTime(sysInfo.getUpdateTime());
-//			} else {
-//				sysInfo = getSystemInfoSaved(server);
-//				sysInfo.setStatus(ServerStatus.offline);
-//			}
-//			notifyStatus(sysInfo);
-//		}
-//		return sysInfo;
-//	}
-//
-//	public SystemInfo getSystemInfoSaved(Server server){
-//		SystemInfo sysInfo = new SystemInfo();
-//		sysInfo.setServerId(server.getId());
-//		//TODO
-////		sysInfo.setRevision(server.getLastUpdateRevision());
-////		sysInfo.setRevisionDate(server.getLastUpdateRevisionDate());
-////		sysInfo.setUpdateTime(server.getLastUpdateTime());
-//		return sysInfo;
-//	}
 
 }

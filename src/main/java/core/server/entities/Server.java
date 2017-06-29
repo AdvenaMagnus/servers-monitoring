@@ -8,6 +8,7 @@ import org.hibernate.annotations.Cascade;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by Grey on 17.03.2017.
@@ -38,9 +39,12 @@ public class Server {
 	@OneToOne
 	@Cascade({org.hibernate.annotations.CascadeType.ALL})
 	ServerDetailInfo detailInfo;
-	@OneToOne
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
 	@Cascade({org.hibernate.annotations.CascadeType.ALL})
-	ServerStatusCached serverStatusCached;
+	List<ServerStatusCached> statuses;
+
+	//ServerStatusCached serverStatusCached;
 	//ServerStatusCached status = ServerStatusCached.ok;
 
 
@@ -82,12 +86,19 @@ public class Server {
 	}
 
 	@JsonIgnore
-	public ServerStatusCached getServerStatusCached() {
-		return serverStatusCached;
+	public List<ServerStatusCached> getStatuses() {
+		return statuses;
 	}
-	public void setServerStatusCached(ServerStatusCached serverStatusCached) {
-		this.serverStatusCached = serverStatusCached;
+	public void setStatuses(List<ServerStatusCached> statuses) {
+		this.statuses = statuses;
 	}
+
+//	public ServerStatusCached getServerStatusCached() {
+//		return serverStatusCached;
+//	}
+//	public void setServerStatusCached(ServerStatusCached serverStatusCached) {
+//		this.serverStatusCached = serverStatusCached;
+//	}
 
 	@JsonIgnore
 	@Transient

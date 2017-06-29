@@ -16,6 +16,8 @@ public interface ServerDAO {
 	Server serverById(long id);
 	Server createNew(Server server);
 	Server update(Server server);
+	void refresh(Server server);
+	//void clear();
 	boolean delete(Server server);
 	//SystemInfo getSystemInfo(Server server);
 	//SystemInfo getSystemInfoSaved(Server server);

@@ -90,7 +90,7 @@ function statusesConf($scope, serversFactory, $http){
     $scope.getServerStatus = function(server){
         //if(serversFactory.isUpdateStatus) {
         $http.get("/servers/status/" + server.id).then(function(response){
-            console.log("recieving server status")
+            //console.log("recieving server status")
         }, function(){
             console.log("Error recieving server status")
         });
