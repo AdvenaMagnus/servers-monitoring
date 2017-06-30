@@ -52,22 +52,29 @@ public class TestGetLastStatus extends OrmTests {
 
 		ServerStatusCached statusOld = new ServerStatusCached();
 		statusOld.setOwner(server);
-		statusOld.setDate(currentDate);
-		statusOld.setMin(1);
-		statusOld.setHours(12);
+		statusOld.setDate(new Date(currentDate.getTime()-10*60*1000));
+//		statusOld.setMin(1);
+//		statusOld.setHours(12);
 		statusDAO.save(statusOld);
 
 		ServerStatusCached statusNew = new ServerStatusCached();
 		statusNew.setOwner(server);
 		statusNew.setDate(currentDate);
-		statusNew.setMin(0);
-		statusNew.setHours(16);
+//		statusNew.setMin(0);
+//		statusNew.setHours(16);
 		statusDAO.save(statusNew);
 
 		serverDAO.refresh(server);
 
+		ServerStatusCached lastStatus = statusDAO.getLastStatus(server);
+
 		assertTrue(server.getStatuses().size()==2);
-		assertTrue(statusDAO.getLastStatus(server).getId()==statusNew.getId());
+		assertTrue(lastStatus.getId()==statusNew.getId());
+		//assertTrue(lastStatus.getMin()>0);
+		//assertTrue(lastStatus.getHours()>0);
+//		assertTrue(lastStatus.getCreateDate()!=null);
+//		assertTrue(lastStatus.getCreateHours()>0);
+//		assertTrue(lastStatus.getCreateMin()>0);
 	}
 
 	@Test

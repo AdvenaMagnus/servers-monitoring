@@ -124,4 +124,9 @@ public class MainController {
 		return new ResponseEntity<HashMap<String, String>>(result, HttpStatus.OK);
 	}
 
+	@RequestMapping(path = "/statistics")
+	public String getStatisticsPage(){
+		return "statistics";
+	}
+
 }

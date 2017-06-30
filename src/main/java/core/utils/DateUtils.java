@@ -11,10 +11,11 @@ import java.util.GregorianCalendar;
  */
 public class DateUtils {
 
-    public static final String dateFormat = "dd.MM.yyyy";
+    public static final String dateFormat = "HH:mm dd.MM.yyyy";
+    public static final String revisionDateFormat = "dd.MM.yyyy";
 
-    public static Date parseDate(String dateString){
-        SimpleDateFormat parser = new SimpleDateFormat(dateFormat);
+    public static Date parseDate(String dateString, String dateFromatString){
+        SimpleDateFormat parser = new SimpleDateFormat(dateFromatString);
         try {
             Date date = parser.parse(dateString);
             return date;

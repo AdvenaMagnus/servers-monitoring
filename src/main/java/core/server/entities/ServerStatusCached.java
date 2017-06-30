@@ -31,15 +31,16 @@ public class ServerStatusCached {
     Date revisionDate;
 
     Date date;
-    int min;
-    int hours;
 
     Date createDate;
-    int createMin;
-    int createHours;
 
 
     boolean isClosed=false;
+
+    @PrePersist
+    public void onCreate(){
+        this.setCreateDate(new Date());
+    }
 
     public long getId() {
         return id;
@@ -62,26 +63,12 @@ public class ServerStatusCached {
         this.revision = revision;
     }
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat, timezone = "GMT+3")
     public Date getDate() {
         return date;
     }
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public int getMin() {
-        return min;
-    }
-    public void setMin(int min) {
-        this.min = min;
-    }
-
-    public int getHours() {
-        return hours;
-    }
-    public void setHours(int hours) {
-        this.hours = hours;
     }
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat)
@@ -91,21 +78,6 @@ public class ServerStatusCached {
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
-
-    public int getCreateMin() {
-        return createMin;
-    }
-    public void setCreateMin(int createMin) {
-        this.createMin = createMin;
-    }
-
-    public int getCreateHours() {
-        return createHours;
-    }
-    public void setCreateHours(int createHours) {
-        this.createHours = createHours;
-    }
-
 
     public boolean getIsClosed() {
         return isClosed;
@@ -120,7 +92,7 @@ public class ServerStatusCached {
     }
 
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.revisionDateFormat)
     public Date getRevisionDate() {
         return revisionDate;
     }

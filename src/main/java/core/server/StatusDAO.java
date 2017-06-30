@@ -84,14 +84,14 @@ public class StatusDAO {
             if(lastStatus !=null && !lastStatus.getIsClosed()) status = lastStatus;
             else{
                 status = new ServerStatusCached();
-                setCreationDate(status, currentDate);
+                status.setCreateDate(currentDate);
                 status.setOwner(server);
                 //server.getStatuses().add(status);
             }
 
             if(revisionInfo[0]!=null) status.setRevision(revisionInfo[0]);
-            if(revisionInfo[1]!=null) status.setRevisionDate(DateUtils.parseDate(revisionInfo[1]));
-            setUpdateDate(status, currentDate);
+            if(revisionInfo[1]!=null) status.setRevisionDate(DateUtils.parseDate(revisionInfo[1], DateUtils.revisionDateFormat));
+            status.setDate(currentDate);
             return status;
         } else {
             if(lastStatus!=null) {
@@ -175,16 +175,16 @@ public class StatusDAO {
     /** Set date and time of status*/
     public void setUpdateDate(ServerStatusCached status, Date date){
         status.setDate(date);
-        int[] minHour = DateUtils.getMinHour(date);
-        status.setMin(minHour[0]);
-        status.setHours(minHour[1]);
+//        int[] minHour = DateUtils.getMinHour(date);
+//        status.setMin(minHour[0]);
+//        status.setHours(minHour[1]);
     }
 
     public void setCreationDate(ServerStatusCached status, Date date){
         status.setCreateDate(date);
-        int[] minHour = DateUtils.getMinHour(date);
-        status.setCreateMin(minHour[0]);
-        status.setCreateHours(minHour[1]);
+//        int[] minHour = DateUtils.getMinHour(date);
+//        status.setCreateMin(minHour[0]);
+//        status.setCreateHours(minHour[1]);
     }
 
     /** Whether last update was more than *interval* minutes ago*/
@@ -192,7 +192,8 @@ public class StatusDAO {
         Date currentDate = new Date();
         if(status!=null && status.getDate()!=null && DateUtils.isSameDay(currentDate, status.getDate())){
             int[] currentMinHour = DateUtils.getMinHour(currentDate);
-            if(currentMinHour[1] == status.getHours() && currentMinHour[0] - status.getMin() <= interval){
+            int[] statusMinHour = DateUtils.getMinHour(status.getDate());
+            if(currentMinHour[1] == statusMinHour[1] && currentMinHour[0] - statusMinHour[0] <= interval){
                 return false;
             }
         }
@@ -203,7 +204,7 @@ public class StatusDAO {
         //TODO
         Criteria cr =  sessionFactory.getCurrentSession()
 						.createCriteria(ServerStatusCached.class).add(Restrictions.eq("owner", server))
-                .addOrder(Order.desc("date")).addOrder(Order.desc("hours")).addOrder(Order.desc("min"));
+                .addOrder(Order.desc("date"));
         cr.setMaxResults(1);
         //List<ServerStatusCached>
         for(Object statusCached : cr.list()){

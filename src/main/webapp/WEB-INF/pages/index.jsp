@@ -7,7 +7,12 @@
 	<link rel="stylesheet" type="text/css" href="/css/main.css">
 	<link rel="shortcut icon" href="/images/favicon_servers.ico" type="image/x-icon" />
 	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="/js/theme-changer.js"></script>
+	<%--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">--%>
+	<%--<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css">--%>
+	<%--<link rel="stylesheet" href="https://bootswatch.com/slate/bootstrap.min.css">--%>
+	<%--<link rel="stylesheet" href="https://bootswatch.com/solar/bootstrap.min.css">--%>
+	<%--<link rel="stylesheet" href="https://bootswatch.com/superhero/bootstrap.min.css">--%>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
 	<script src="/js/lib/ui-bootstrap-tpls-2.5.0.min.js"></script>
@@ -15,10 +20,17 @@
 	<script src="/js/services.js"></script>
 	<script src="/js/server-ctrl.js"></script>
 </head>
-<body ng-app="main" class="bgcolor">
+<body ng-app="main">
+<div style="text-align: right">
+	<a href="#" data-theme="default" class="theme-link">Default | </a>
+	<a href="#" data-theme="geo" class="theme-link">GEO | </a>
+	<a href="#" data-theme="slate" class="theme-link">Dark</a>
+</div>
+
 <h1 style="padding-left: 20px;text-align: center">Мониторинг серверов</h1>
 <div ng-controller="mainController">
 	<h4 style="padding-left: 20px;text-align: center"><a href ng-click="updateAllNow()" style="text-align: center">Обновить все</a></h4>
+	<h4 style="padding-left: 20px;text-align: center"><a href="/statistics"   style="text-align: center">Статистика</a></h4>
 	<%--<a href ng-click="updateAllNow()">Обновить статусы у всех серверов</a>--%>
 	<table class="table table-striped" style="width:auto;" align="center">
 		<tr>
@@ -48,7 +60,7 @@
 				{{server.serverStatusCached.revisionDate}}
 				{{server.lastUpdateDays!=null? '(' : ''}}<font color="{{getDaysTextColor(server.lastUpdateDays)}}">{{server.lastUpdateDays}}</font>{{server.lastUpdateDays!=null? ')' : ''}}
 				</br>
-				<span style="color:darkgrey; font-size:9px;">{{formatIntForTime(server.serverStatusCached.hours)}}:{{formatIntForTime(server.serverStatusCached.min)}} {{server.serverStatusCached.date}}</span>
+				<span style="font-size:9px;">{{server.serverStatusCached.date}}</span>
 			</td>
 			<td class="serverspadding" style="white-space: pre-wrap;">{{server.notices}}</td>
 			<%--<td class="serverspadding" ng-init="updateServer(server)"><a href  ng-click="updateServer(server)">Обновить статус</a></td>--%>

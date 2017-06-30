@@ -131,7 +131,8 @@ function statusesConf($scope, serversFactory, $http){
 
 	$scope.colorStatus = function(server) {
 		if(server.serverStatusCached != null) {
-            if (server.serverStatusCached.status == 'online') return 'success';
+            //if (server.serverStatusCached.status == 'online') return 'success';
+            if (server.serverStatusCached.status == 'online') return '';
             if (server.serverStatusCached.status == 'offline') return 'danger';
             if (server.serverStatusCached.ping == 'нет') return 'warning';
         }
@@ -139,9 +140,9 @@ function statusesConf($scope, serversFactory, $http){
 	};
 
 	$scope.getDaysTextColor = function(days){
-		if(days<=30) return 'green';
-		if(days>30 && days<=90) return 'orange';
-		if(days>90) return 'red';
+		if(days<=30) return '#008000';
+		if(days>30 && days<=90) return '#D68B00';
+		if(days>90) return '#C71300';
 	};
 
     /** Clear all status data on servers*/
@@ -354,4 +355,3 @@ function CRUDconf($scope, $http, serversFactory){
 		});
 	};
 }
-
