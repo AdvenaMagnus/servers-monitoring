@@ -73,8 +73,8 @@ function statusesConf($scope, $http){
 	$scope.updateAllNow = function(){
 		$scope.clearStatuses($scope.servers);
         $scope.servers.forEach(function(s){
-			$scope.getServerStatus(s);
-			$scope.getServerPing(s);
+            crudServiceForServers.updateStatus(s);
+            crudServiceForServers.updatePing(s);
 		});
 	};
 
