@@ -2,7 +2,7 @@
  * Created by Grey on 23.03.2017.
  */
 
-monitoringModule.controller('serverCtrl', function($scope, $uibModalInstance, server, serversFactory, serversScope) {
+monitoringModule.controller('serverCtrl', function($scope, $uibModalInstance, server) {
 
     $scope.server = server;
     $scope.ipReg = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
@@ -12,28 +12,22 @@ monitoringModule.controller('serverCtrl', function($scope, $uibModalInstance, se
         return true;
     };
 
+    var closePopup = function () {
+        $uibModalInstance.close($scope.server)
+    };
+
     $scope.ok = function () {
         if($scope.server.id != null) {
-            var callback = function (server) {
-                //serversFactory.updateServer(serversScope.servers, server);
-                serversScope.updateServerLocal(serversFactory.servers, server);
-                $uibModalInstance.close($scope.server);
-            };
-            serversScope.updateServerOnServer($scope.server, callback);
+            crudServiceForServers.updateServer($scope.server, closePopup);
         }
 
         if(typeof $scope.server.id == 'undefined'){
-            var callback = function(server){
-                //serversScope.servers.push(server);
-                //serversScope.updateServerLocal(serversFactory.servers, server);
-                new Notification('Новый сервер', {
-                    tag : "new-server",
-                    body : server.name,
-                    icon: "/images/favicon_servers.ico"
-                });
-                $uibModalInstance.close($scope.server);
-            };
-            serversScope.createServer($scope.server, callback);
+            new Notification('Новый сервер', {
+                tag : "new-server",
+                body : $scope.server.name,
+                icon: "/images/favicon_servers.ico"
+            });
+            crudServiceForServers.createServer($scope.server, closePopup);
         }
     };
 

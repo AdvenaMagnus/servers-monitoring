@@ -1,0 +1,174 @@
+/**
+ * Created by Alexander on 30.06.2017.
+ */
+// describe("pow", function() {
+//
+//     it("возводит в n-ю степень", function() {
+//         assert.equal(pow(2, 3), 8);
+//     });
+//
+// });
+
+describe("Servers manipulation tests", function() {
+    describe("Add and get server", function() {
+
+        var server = {
+            id:1
+        };
+
+        var tempServers = servers;
+
+        it("Add server", function() {
+            serversDAO.addServer(server);
+            assert.isTrue(servers.length>0);
+            assert.equal(tempServers, servers);
+        });
+
+        it("Get server", function() {
+            var fetchedServer = serversDAO.getServerById(server.id);
+            assert.equal(fetchedServer, server);
+            assert.equal(tempServers, servers);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+    describe("Remove server", function() {
+        var server1 = {
+            id:1,
+            meta: 'server1'
+        };
+        var server2 = {
+            id:2,
+            meta: 'server2'
+        };
+
+        var tempServs = servers;
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server1);
+            serversDAO.addServer(server2);
+            assert.isTrue(servers.length==2);
+            //assert.equal(tempServs, servers);
+        });
+
+        it("Getting index by id test", function() {
+            var i = serversDAO.indexById(server2.id);
+            assert.isTrue(i==1);
+        });
+
+        it("Remove server", function() {
+            serversDAO.removeServerById(server1.id);
+            assert.isTrue(servers.length==1);
+            assert.equal(servers[0], server2);
+            //assert.equal(tempServs, servers);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+    describe("Update server", function() {
+        var server1 = {
+            id:1,
+            meta: 'server1'
+        };
+        var server2 = {
+            id:1,
+            meta: 'server2'
+        };
+        var server3 = {
+            id:2,
+            meta: 'server3'
+        };
+
+        var tempServs = servers;
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server1);
+            assert.isTrue(servers.length==1);
+            //assert.equal(tempServs, servers);
+        });
+
+        it("Replace server by id", function() {
+            serversDAO.updateServer(server2);
+            assert.isTrue(servers[0]==server2);
+            assert.isTrue(servers[0].meta == server2.meta);
+            assert.isTrue(servers.length==1);
+        });
+
+        it("If server to update doesn't exist - add one", function() {
+            serversDAO.updateServer(server3);
+            assert.isTrue(servers[1]==server3);
+            assert.isTrue(servers[1].meta == server3.meta);
+            assert.isTrue(servers.length==2);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+    describe("Update detailinfo", function() {
+
+        var server1 = {
+            id: 1,
+            meta: 'server1'
+        };
+
+        var server2 = {
+            id: 2,
+            meta: 'server2'
+        };
+
+        var detailinfo1 = {
+            info: 'detailinfo1'
+        };
+
+        var detailinfo2 = {
+            info: 'detailinfo1'
+        };
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server1);
+            serversDAO.addServer(server2);
+            assert.isTrue(servers.length==2);
+            //assert.equal(tempServs, servers);
+        });
+
+        it("Add detailInfo object to server by id", function() {
+            serversDAO.updateDetailInfo(1, detailinfo1);
+            assert.isTrue(servers[0]==server1);
+            assert.isTrue(servers[0].detailInfo == detailinfo1);
+            assert.isTrue(servers.length==2);
+        });
+
+        it("If server with id doesn't exist - do nothing", function() {
+            serversDAO.updateDetailInfo(5, detailinfo2);
+            assert.isTrue(servers[0]==server1);
+            assert.isTrue(servers[1]==server2);
+            assert.isTrue(typeof servers[1].detailInfo == 'undefined');
+            assert.isTrue(servers.length==2);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+});
+

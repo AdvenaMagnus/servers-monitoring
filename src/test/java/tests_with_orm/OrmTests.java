@@ -1,6 +1,7 @@
 package tests_with_orm;
 
 import configuration.HibernateConfig;
+import controller.MainController;
 import core.server.ServerDAO;
 import core.server.StatusDAO;
 import core.server.entities.Server;
@@ -43,6 +44,12 @@ public class OrmTests {
 
 	@Autowired
 	SessionFactory sessionFactory;
+
+	@Autowired
+	TestDAO testDAO;
+
+	@Autowired
+	MainController mainController;
 
 	@After
 	//@Transactional(transactionManager = "transactionManager")

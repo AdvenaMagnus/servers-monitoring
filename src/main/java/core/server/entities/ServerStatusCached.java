@@ -63,7 +63,7 @@ public class ServerStatusCached {
         this.revision = revision;
     }
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat, timezone = "GMT+3")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern= DateUtils.dateFormat, timezone = "GMT+5")
     public Date getDate() {
         return date;
     }

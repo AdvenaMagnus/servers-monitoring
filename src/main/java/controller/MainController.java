@@ -36,6 +36,23 @@ public class MainController {
 	@Autowired
 	StatusDAO statusDAO;
 
+	public MainController(){}
+
+	public MainController(StatusDAO statusDAO){
+		this.statusDAO = statusDAO;
+	}
+
+	public MainController(StatusDAO statusDAO, ServerDAO serverDao){
+		this.statusDAO = statusDAO;
+		this.serverDao = serverDao;
+	}
+
+	public MainController(StatusDAO statusDAO, ServerDAO serverDao, NotifyService notifyService){
+		this.statusDAO = statusDAO;
+		this.serverDao = serverDao;
+		this.notifyService = notifyService;
+	}
+
 	@RequestMapping(path = "/")
 	public String index(){
 		return "index";

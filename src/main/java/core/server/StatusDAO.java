@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,7 +78,7 @@ public class StatusDAO {
     public ServerStatusCached updateData(Server server, ServerStatusCached lastStatus) {
         String[] revisionInfo = getRevisionAndDate("http://"+server.getIp());
         if(revisionInfo!=null){
-            Date currentDate = new Date();
+            Date currentDate = DateUtils.getCurrentTime();
             ServerStatusCached status;
             if(lastStatus !=null && !lastStatus.getIsClosed()) status = lastStatus;
             else{

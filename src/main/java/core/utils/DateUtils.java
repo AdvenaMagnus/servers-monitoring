@@ -2,9 +2,7 @@ package core.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 /**
  * Created by Alexander on 12.05.2017.
@@ -41,5 +39,12 @@ public class DateUtils {
         cal2.setTime(date2);
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static Date getCurrentTime() {
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT+5"));
+
+        return cal.getTime();
     }
 }
