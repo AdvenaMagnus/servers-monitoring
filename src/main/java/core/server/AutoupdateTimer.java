@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by Alexander on 27.06.2017.
  */
@@ -35,14 +38,27 @@ public class AutoupdateTimer implements Runnable{
 				//Thread.sleep(10000);
 				System.out.println("Autoupdate servers");
 
-				for(Server server : serverDAO.allServers()){
-//					new Thread(() -> {
-//						statusDAO.updateStatus(server);
-//						notifyService.notifyStatus(server);
-//					}).start();
-					ServerStatusCached status = statusDAO.updateStatus(server);
-					notifyService.notifyStatus(status);
+				ExecutorService service = null;
+				try{
+					service = Executors.newSingleThreadExecutor();
+					for(Server server : serverDAO.allServers()) {
+						service.execute(() -> {
+							ServerStatusCached status = statusDAO.updateStatus(server);
+							notifyService.notifyStatus(status);
+						});
+					}
+				} finally {
+					if(service != null) service.shutdown();
 				}
+
+//				for(Server server : serverDAO.allServers()){
+////					new Thread(() -> {
+////						statusDAO.updateStatus(server);
+////						notifyService.notifyStatus(server);
+////					}).start();
+//					ServerStatusCached status = statusDAO.updateStatus(server);
+//					notifyService.notifyStatus(status);
+//				}
 				System.out.println("Autoupdate servers finished");
 
 			} catch (InterruptedException e) {

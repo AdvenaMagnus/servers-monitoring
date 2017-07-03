@@ -172,3 +172,76 @@ describe("Servers manipulation tests", function() {
 
 });
 
+describe("SSE service", function() {
+
+    describe("Deleting server", function() {
+
+        var server = {
+            id:1
+        };
+        var id = 1;
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server);
+            assert.isTrue(servers.length==1);
+            //assert.equal(tempServs, servers);
+        });
+
+
+        it("Delete server", function() {
+            sseService.deleteServer(id);
+            assert.isTrue(servers.length==0);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+    describe("Updating server status", function() {
+
+        currentDate = '21.12.2012';
+
+        var server = {
+            id:1
+        };
+
+        var msg = {
+            server_id:1,
+            server_status: {
+                id:2,
+                status: 'Online',
+                revision: 0001,
+                revisionDate: '23.12.2012'
+            }
+        };
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server);
+            assert.isTrue(servers.length==1);
+            //assert.equal(tempServs, servers);
+        });
+
+
+        it("Updating server status", function() {
+            sseService.statusUpdate(msg);
+            assert.isTrue(servers.length==1);
+            assert.isTrue(servers[0].serverStatusCached.status == msg.server_status.status);
+            assert.isTrue(servers[0].serverStatusCached.revision == msg.server_status.revision);
+            assert.isTrue(servers[0].serverStatusCached.revisionDate == msg.server_status.revisionDate);
+        });
+
+        after(function() {
+            servers = [];
+            assert.isTrue(servers.length==0);
+        });
+
+    });
+
+
+});
+
