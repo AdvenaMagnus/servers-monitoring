@@ -1,8 +1,11 @@
 package core.server;
 
+import core.server.entities.OnMaintenanceStatus;
 import core.server.entities.Server;
+import core.server.entities.ServerStatusCached;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -70,6 +73,20 @@ public class ServerDAOHib implements ServerDAO{
 		sessionFactory.getCurrentSession().delete(server);
 		//notifyAboutDelete(server);
 		return true;
+	}
+
+	@Override
+	public List<ServerStatusCached> getStatuses(Server server) {
+		Criteria cr =  sessionFactory.getCurrentSession()
+						.createCriteria(ServerStatusCached.class).add(Restrictions.eq("owner", server));
+		return cr.list();
+	}
+
+	@Override
+	public List<OnMaintenanceStatus> getMaintenanceStatuses(Server server) {
+		Criteria cr =  sessionFactory.getCurrentSession()
+						.createCriteria(OnMaintenanceStatus.class).add(Restrictions.eq("owner", server));
+		return cr.list();
 	}
 
 }

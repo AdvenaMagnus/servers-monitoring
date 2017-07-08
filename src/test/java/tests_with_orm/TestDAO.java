@@ -33,4 +33,16 @@ public class TestDAO {
         return sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
     }
 
+    public void delete(Object obj){
+        sessionFactory.getCurrentSession().delete(obj);
+    }
+
+    public Object getById(Class cls, long id){
+        return sessionFactory.getCurrentSession().get(cls, id);
+    }
+
+    public void saveOrUpdate(Object obj){
+        sessionFactory.getCurrentSession().saveOrUpdate(obj);
+    }
+
 }

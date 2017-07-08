@@ -163,6 +163,9 @@ function SSEconf(){
             case 'status':
                 sseService.statusUpdate(dataParsed.msg);
                 break;
+            case 'ping':
+                sseService.statusUpdate(dataParsed.msg);
+                break;
             case 'detailinfo':
                 sseService.updateDetailInfo(dataParsed.msg);
                 break;
@@ -197,7 +200,6 @@ sseService.updateServer = function(data){
 sseService.statusUpdate = function (data) {
     var parsedStatus = data;
     var serverLocal = serversDAO.getServerById(parsedStatus.server_id);
-    serverLocal.serverStatusCached = parsedStatus.server_status;
     if (typeof serverLocal != 'undefined') {
         if (typeof serverLocal.serverStatusCached != 'undefined') {
             if (serverLocal.serverStatusCached.status != null)
@@ -211,6 +213,7 @@ sseService.statusUpdate = function (data) {
             }
         }
     }
+    serverLocal.serverStatusCached = parsedStatus.server_status;
     if (typeof serverLocal.serverStatusCached.revisionDate != 'undefined' && serverLocal.serverStatusCached.revisionDate != null)
         serverLocal.lastUpdateDays = mutils.daysBetweenDates(
             new Date(mutils.formatDate(currentDate)),
@@ -229,7 +232,14 @@ sseService.updateDetailInfo = function (data) {
     // }
 
     //})
-}
+};
+
+sseService.updatePing = function (data) {
+    var server = serversDAO.getServerById(data.server_id)
+    server.ping = data.ping
+};
+
+
 
 //getCurrentDate();
 //SSEconf();

@@ -242,6 +242,48 @@ describe("SSE service", function() {
 
     });
 
+    describe("Updating server ping", function() {
+        var server = {
+            id:1
+        };
+
+        var server2 = {
+            id:2,
+            ping:'5 мс'
+        };
+
+        var msg = {
+            server_id:1,
+            ping: '8 мс'
+        };
+
+        var msg2 = {
+            server_id:2,
+            ping: '9 мс'
+        };
+
+        before(function() {
+            assert.isTrue(servers.length==0);
+            serversDAO.addServer(server);
+            serversDAO.addServer(server2);
+            assert.isTrue(servers.length==2);
+            //assert.equal(tempServs, servers);
+        });
+
+        it("Updating ping when server has no ping data", function() {
+            sseService.updatePing(msg);
+            assert.isTrue(servers.length==2);
+            assert.isTrue(servers[0].ping == msg.ping);
+        });
+
+        it("Updating ping when server already has ping data", function() {
+            sseService.updatePing(msg2);
+            assert.isTrue(servers.length==2);
+            assert.isTrue(servers[1].ping == msg2.ping);
+        });
+
+    });
+
 
 });
 

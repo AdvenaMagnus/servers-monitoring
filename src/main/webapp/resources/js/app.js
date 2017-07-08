@@ -92,13 +92,17 @@ function statusesConf($scope, $http){
 	};
 
 	$scope.colorStatus = function(server) {
-		if(server.serverStatusCached != null) {
-            //if (server.serverStatusCached.status == 'online') return 'success';
-            if (server.serverStatusCached.status == 'online') return '';
-            if (server.serverStatusCached.status == 'offline') return 'danger';
-            if (server.serverStatusCached.ping == 'нет') return 'warning';
-        }
-		return ''
+		if(!server.inService) {
+            if (server.serverStatusCached != null) {
+                //if (server.serverStatusCached.status == 'online') return 'success';
+                if (server.serverStatusCached.status == 'online') return '';
+                if (server.serverStatusCached.status == 'offline') return 'danger';
+                if (server.serverStatusCached.ping == 'нет') return 'warning';
+            }
+            return ''
+        } else {
+			return 'info';
+		}
 	};
 
 	$scope.getDaysTextColor = function(days){

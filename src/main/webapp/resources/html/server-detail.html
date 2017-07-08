@@ -23,7 +23,7 @@
                 <td>IP-адрес</td>
                 <td><input type="text" ng-model="server.ip"></td>
             </tr>
-            <tr >
+            <tr>
                 <td style="border-top: 1px solid black">Логин в системе</td>
                 <td style="border-top: 1px solid black"><input type="text" ng-model="server.detailInfo.systemLogin"></td>
             </tr>
@@ -32,16 +32,12 @@
                 <td><input type="text" ng-model="server.detailInfo.systemPassword"></td>
             </tr>
             <tr>
-                <td style="border-top: 1px solid black">Логин к серверу</td>
-                <td style="border-top: 1px solid black"><input type="text" ng-model="server.detailInfo.serverLogin"></td>
-            </tr>
-            <tr>
-                <td>Пароль к серверу</td>
-                <td><input type="text" ng-model="server.detailInfo.serverPassword"></td>
-            </tr>
-            <tr>
                 <td>Примечания</td>
                 <td><textarea  type="text" ng-model="server.notices" rows="3" style="width:100%"/></td>
+            </tr>
+            <tr>
+                <td>На обслуживании</td>
+                <td><input type="checkbox" ng-model="server.inService" name="На обслуживании"/></td>
             </tr>
         </table>
     </div>

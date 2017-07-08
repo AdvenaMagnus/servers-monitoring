@@ -7,12 +7,14 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
+import core.server.entities.OnMaintenanceStatus;
 import core.server.entities.Server;
 import core.server.entities.ServerStatusCached;
 import core.utils.DateUtils;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,10 +101,6 @@ public class StatusDAO {
             }
         }
         return null;
-    }
-
-    public void save(ServerStatusCached status){
-        sessionFactory.getCurrentSession().saveOrUpdate(status);
     }
 
     /** Parse revision and revision date to Array[revision, revision date] */
@@ -199,8 +197,11 @@ public class StatusDAO {
         return true;
     }
 
+    public void save(ServerStatusCached status){
+        sessionFactory.getCurrentSession().saveOrUpdate(status);
+    }
+
     public ServerStatusCached getLastStatus(Server server){
-        //TODO
         Criteria cr =  sessionFactory.getCurrentSession()
 						.createCriteria(ServerStatusCached.class).add(Restrictions.eq("owner", server))
                 .addOrder(Order.desc("date"));
@@ -209,6 +210,31 @@ public class StatusDAO {
         for(Object statusCached : cr.list()){
             return (ServerStatusCached) statusCached;
         }
+        return null;
+    }
+
+    public void saveOnMaintenanceServer(OnMaintenanceStatus status){
+        sessionFactory.getCurrentSession().saveOrUpdate(status);
+    }
+
+    public OnMaintenanceStatus getLastOnMaintenanceStatus(Server server){
+        //TODO optimize
+        Criteria cr =  sessionFactory.getCurrentSession()
+                .createCriteria(OnMaintenanceStatus.class).add(Restrictions.eq("owner", server)).add(Restrictions.isNull("dateTo"));
+        cr.setMaxResults(1);
+        //List<ServerStatusCached>
+        for(Object statusCached : cr.list()){
+            return (OnMaintenanceStatus) statusCached;
+        }
+
+        Criteria cr2 =  sessionFactory.getCurrentSession()
+                .createCriteria(OnMaintenanceStatus.class).add(Restrictions.eq("owner", server)).addOrder(Order.asc("dateTo"));
+        cr2.setMaxResults(1);
+
+        for(Object statusCached : cr2.list()){
+            return (OnMaintenanceStatus) statusCached;
+        }
+
         return null;
     }
 

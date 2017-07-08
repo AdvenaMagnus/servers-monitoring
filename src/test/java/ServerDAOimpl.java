@@ -1,5 +1,7 @@
 import core.server.ServerDAO;
+import core.server.entities.OnMaintenanceStatus;
 import core.server.entities.Server;
+import core.server.entities.ServerStatusCached;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +39,21 @@ public class ServerDAOimpl implements ServerDAO {
 
 	@Override
 	public void refresh(Server server) {
-
 	}
 
 	@Override
 	public boolean delete(Server server) {
 		return false;
+	}
+
+	@Override
+	public List<ServerStatusCached> getStatuses(Server server) {
+		return null;
+	}
+
+	@Override
+	public List<OnMaintenanceStatus> getMaintenanceStatuses(Server server) {
+		return null;
 	}
 
 

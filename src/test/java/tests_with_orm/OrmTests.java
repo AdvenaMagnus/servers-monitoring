@@ -2,6 +2,7 @@ package tests_with_orm;
 
 import configuration.HibernateConfig;
 import controller.MainController;
+import core.server.PingService;
 import core.server.ServerDAO;
 import core.server.StatusDAO;
 import core.server.entities.Server;
@@ -13,6 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -34,57 +36,61 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class, classes = {TestConf.class, HibernateConfig.class})
 //@TransactionConfiguration(transactionManager="transactionManager", defaultRollback=true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class OrmTests {
 
 	@Autowired
-	ServerDAO serverDAO;
+	public ServerDAO serverDAO;
 
 	@Autowired
-	StatusDAO statusDAO;
+	public StatusDAO statusDAO;
 
 	@Autowired
-	SessionFactory sessionFactory;
+	public SessionFactory sessionFactory;
 
 	@Autowired
-	TestDAO testDAO;
+	public TestDAO testDAO;
 
 	@Autowired
-	MainController mainController;
+	public MainController mainController;
 
-	@After
-	//@Transactional(transactionManager = "transactionManager")
-	public void afterTests(){
-		System.out.println("Clear db");
-		//sessionFactory.getCurrentSession().clear();
-		//serverDAO.clear();
+	@Autowired
+	public PingService pingService;
 
-		Session s = sessionFactory.openSession();
-		sessionFactory.getMetamodel().getEntities();
-		for(EntityType type : sessionFactory.getMetamodel().getEntities()){
-			s.beginTransaction();
-			for(Object ent : s.createCriteria(type.getJavaType()).list()){
-				//serverDAO.delete((Server) server);
-				s.delete(ent);
-			}
-			s.getTransaction().commit();
-		}
-
+//	@After
+//	//@Transactional(transactionManager = "transactionManager")
+//	public void afterTests(){
+//		System.out.println("Clear db");
+//		//sessionFactory.getCurrentSession().clear();
+//		//serverDAO.clear();
+//
 //		Session s = sessionFactory.openSession();
-//		s.beginTransaction();
-//		//List list = s.createSQLQuery("SHOW TABLES").list();
-//		for(Object obj: s.createSQLQuery("SHOW TABLES").list()){
-//			s.createSQLQuery("truncate table " + ((Object[])obj)[0].toString().toLowerCase()).executeUpdate();
+//		sessionFactory.getMetamodel().getEntities();
+//		for(EntityType type : sessionFactory.getMetamodel().getEntities()){
+//			s.beginTransaction();
+//			for(Object ent : s.createCriteria(type.getJavaType()).list()){
+//				//serverDAO.delete((Server) server);
+//				s.delete(ent);
+//			}
+//			s.getTransaction().commit();
 //		}
-//		//s.createSQLQuery("DROP ALL OBJECTS").executeUpdate();
-//		s.getTransaction().commit();
-
-//		s.beginTransaction();
-//		for(Object server : s.createCriteria(Server.class).list()){
-//			//serverDAO.delete((Server) server);
-//			s.delete(server);
-//		}
-//		s.getTransaction().commit();
-	}
+//
+////		Session s = sessionFactory.openSession();
+////		s.beginTransaction();
+////		//List list = s.createSQLQuery("SHOW TABLES").list();
+////		for(Object obj: s.createSQLQuery("SHOW TABLES").list()){
+////			s.createSQLQuery("truncate table " + ((Object[])obj)[0].toString().toLowerCase()).executeUpdate();
+////		}
+////		//s.createSQLQuery("DROP ALL OBJECTS").executeUpdate();
+////		s.getTransaction().commit();
+//
+////		s.beginTransaction();
+////		for(Object server : s.createCriteria(Server.class).list()){
+////			//serverDAO.delete((Server) server);
+////			s.delete(server);
+////		}
+////		s.getTransaction().commit();
+//	}
 
 
 

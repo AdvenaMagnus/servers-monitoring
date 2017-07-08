@@ -1,13 +1,13 @@
 package controller;
 
 import core.server.LightServer;
+import core.server.PingService;
 import core.server.StatusDAO;
 import core.server.entities.Server;
 import core.server.ServerDAO;
 import core.server.entities.ServerDetailInfo;
 import core.server.entities.ServerStatusCached;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -35,6 +35,9 @@ public class MainController {
 
 	@Autowired
 	StatusDAO statusDAO;
+
+	@Autowired
+	PingService pingService;
 
 	public MainController(){}
 
@@ -84,7 +87,7 @@ public class MainController {
 		Server server = serverDao.serverById(id);
 		if(server !=null) {
 			Map<String,String> result = new HashMap<String,String>();
-			result.put("ping", serverDao.getPing(server));
+			result.put("ping", pingService.getPingToServer(server));
 			return new ResponseEntity<Map<String,String>>(result, HttpStatus.OK);
 		}
 		else

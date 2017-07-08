@@ -3,6 +3,7 @@ package tests_with_orm;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import controller.MainController;
 import controller.NotifyService;
+import core.server.PingService;
 import core.server.ServerDAO;
 import core.server.ServerDAOHib;
 import core.server.StatusDAO;
@@ -35,6 +36,12 @@ public class TestConf {
 		//return new ServerDAOimpl();
 		return new ServerDAOHib();
 	}
+
+	@Bean
+	public PingService getPingService(){
+		return spy(PingService.class);
+	}
+
 
 	@Bean
 	public StatusDAO getStatusDao(){

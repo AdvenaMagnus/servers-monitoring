@@ -1,8 +1,11 @@
 package core.server;
 
 import core.LightObject;
+import core.server.entities.OnMaintenanceStatus;
 import core.server.entities.Server;
+import core.server.entities.ServerStatusCached;
 
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,21 +22,10 @@ public interface ServerDAO {
 	void refresh(Server server);
 	//void clear();
 	boolean delete(Server server);
+	List<ServerStatusCached> getStatuses(Server server);
+	List<OnMaintenanceStatus> getMaintenanceStatuses(Server server);
 	//SystemInfo getSystemInfo(Server server);
 	//SystemInfo getSystemInfoSaved(Server server);
-
-	default String getPing(Server server) throws Exception{
-		if(server!=null && server.getIp()!=null){
-			long currentTime = System.currentTimeMillis();
-			boolean isPinged = InetAddress.getByName(server.getIp().split(":")[0]).isReachable(5000); // 5 seconds
-			currentTime = System.currentTimeMillis() - currentTime;
-			if(isPinged) {
-				return currentTime/100+" мс";
-			} else {
-				return "нет";
-			}
-		} else return "нет";
-	}
 
 	default List<LightObject> allServersLight(){
 		List<LightObject> result = new ArrayList<LightObject>();

@@ -6,15 +6,17 @@ import core.LightObject;
 import core.server.LightServer;
 import org.hibernate.annotations.Cascade;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Grey on 17.03.2017.
  */
 @Entity
 @Repository
+@Transactional
 public class Server {
 
 	public Server(){
@@ -36,13 +38,20 @@ public class Server {
 	String name;
 	String ip;
 	String notices;
+
 	@OneToOne
 	@Cascade({org.hibernate.annotations.CascadeType.ALL})
 	ServerDetailInfo detailInfo;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-	@Cascade({org.hibernate.annotations.CascadeType.ALL})
-	List<ServerStatusCached> statuses;
+	boolean inService=false;
+
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+//	@Cascade({org.hibernate.annotations.CascadeType.ALL})
+//	Set<ServerStatusCached> statuses;
+
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "server")
+//	@Cascade({org.hibernate.annotations.CascadeType.ALL})
+//	Set<OnMaintenanceStatus> maintanceStatuses;
 
 	//ServerStatusCached serverStatusCached;
 	//ServerStatusCached status = ServerStatusCached.ok;
@@ -84,21 +93,37 @@ public class Server {
 	public void setDetailInfo(ServerDetailInfo detailInfo) {
 		this.detailInfo = detailInfo;
 	}
+//
+//	@JsonIgnore
+//	public Set<ServerStatusCached> getStatuses() {
+//		return statuses;
+//	}
+//	public void setStatuses(Set<ServerStatusCached> statuses) {
+//		this.statuses = statuses;
+//	}
 
-	@JsonIgnore
-	public List<ServerStatusCached> getStatuses() {
-		return statuses;
-	}
-	public void setStatuses(List<ServerStatusCached> statuses) {
-		this.statuses = statuses;
-	}
+//	@JsonIgnore
+//	public Set<OnMaintenanceStatus> getMaintanceStatuses() {
+//		return maintanceStatuses;
+//	}
+//	public void setMaintanceStatuses(Set<OnMaintenanceStatus> maintanceStatuses) {
+//		this.maintanceStatuses = maintanceStatuses;
+//	}
 
-//	public ServerStatusCached getServerStatusCached() {
+	//	public ServerStatusCached getServerStatusCached() {
 //		return serverStatusCached;
 //	}
 //	public void setServerStatusCached(ServerStatusCached serverStatusCached) {
 //		this.serverStatusCached = serverStatusCached;
 //	}
+
+
+	public boolean getInService() {
+		return inService;
+	}
+	public void setInService(boolean inService) {
+		this.inService = inService;
+	}
 
 	@JsonIgnore
 	@Transient
