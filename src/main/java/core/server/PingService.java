@@ -4,6 +4,7 @@ import core.enums.DowntimeReason;
 import core.server.entities.OnMaintenanceStatus;
 import core.server.entities.Server;
 import core.utils.DateUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class PingService {
 	@Autowired
 	StatusDAO statusDAO;
 
-	public String getPingToServer(Server server) throws Exception{
+	public String getPingToServer(Server server){
 		if (server.getInService()) {
 			updateMaintenanceStatus(server, DowntimeReason.inService);
 			return inService;
@@ -87,7 +88,14 @@ public class PingService {
 //		}
 //		return ping != Long.MAX_VALUE ? true : false;
 
-		//TODO make option for pinging on *nix servers
+		//TODO make option for pinging on *nix servers by changing -n to -s
+
+		String osConf = "";
+		if(SystemUtils.IS_OS_LINUX) osConf = "-s";
+		else {
+			if(SystemUtils.IS_OS_WINDOWS) osConf = "-n";
+		}
+
 		Process p1 = null;
 		try {
 			p1 = Runtime.getRuntime().exec("ping -n 1 www.google.com");

@@ -30,6 +30,9 @@ public class AutoupdateTimer implements Runnable{
 	@Autowired
 	NotifyService notifyService;
 
+	@Autowired
+	PingService pingService;
+
 	@Override
 	public void run() {
 		while(true){
@@ -43,8 +46,14 @@ public class AutoupdateTimer implements Runnable{
 					service = Executors.newSingleThreadExecutor();
 					for(Server server : serverDAO.allServers()) {
 						service.execute(() -> {
-							ServerStatusCached status = statusDAO.updateStatus(server);
-							notifyService.notifyStatus(status);
+							String ping = pingService.getPingToServer(server);
+							notifyService.notifyPing(server, ping);
+							if(!ping.equals(PingService.inService)
+									&& !ping.equals(PingService.noConnection)
+									&& !ping.equals(PingService.noPing)){
+								ServerStatusCached status = statusDAO.updateStatus(server);
+								notifyService.notifyStatus(status);
+							}
 						});
 					}
 				} finally {

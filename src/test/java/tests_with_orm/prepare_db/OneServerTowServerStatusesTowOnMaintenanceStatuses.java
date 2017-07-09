@@ -27,7 +27,7 @@ public class OneServerTowServerStatusesTowOnMaintenanceStatuses extends OrmTests
 
 
 	@Before
-	public void init(){
+	public void initObjects(){
 
 		server = new Server();
 		server.setIp("127.0.0.1:8080");

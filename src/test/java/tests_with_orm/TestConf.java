@@ -45,7 +45,8 @@ public class TestConf {
 
 	@Bean
 	public StatusDAO getStatusDao(){
-		return new StatusDAO();
+		//return new StatusDAO();
+		return spy(StatusDAO.class);
 	}
 
 	@Bean
