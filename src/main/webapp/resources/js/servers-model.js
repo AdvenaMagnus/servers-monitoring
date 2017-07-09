@@ -164,7 +164,7 @@ function SSEconf(){
                 sseService.statusUpdate(dataParsed.msg);
                 break;
             case 'ping':
-                sseService.statusUpdate(dataParsed.msg);
+                sseService.updatePing(dataParsed.msg);
                 break;
             case 'detailinfo':
                 sseService.updateDetailInfo(dataParsed.msg);

@@ -48,8 +48,7 @@ public class AutoupdateTimer implements Runnable{
 						service.execute(() -> {
 							String ping = pingService.getPingToServer(server);
 							notifyService.notifyPing(server, ping);
-							if(!ping.equals(PingService.inService)
-									&& !ping.equals(PingService.noConnection)
+							if(!ping.equals(PingService.noConnection)
 									&& !ping.equals(PingService.noPing)){
 								ServerStatusCached status = statusDAO.updateStatus(server);
 								notifyService.notifyStatus(status);

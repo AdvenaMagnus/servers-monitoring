@@ -98,7 +98,7 @@ public class PingService {
 
 		Process p1 = null;
 		try {
-			p1 = Runtime.getRuntime().exec("ping -n 1 www.google.com");
+			p1 = Runtime.getRuntime().exec("ping "+ osConf+" 1 www.google.com");
 			int returnVal = p1.waitFor();
 			return returnVal==0;
 		} catch (IOException e) {
