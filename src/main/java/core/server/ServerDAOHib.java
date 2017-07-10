@@ -1,16 +1,20 @@
 package core.server;
 
+import core.server.entities.OnMaintenanceStatus;
+import core.server.entities.Server;
+import core.server.entities.ServerStatusCached;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -18,83 +22,71 @@ import java.util.List;
  */
 @Service
 @Transactional
-@Qualifier("server_dao_persist")
 public class ServerDAOHib implements ServerDAO{
-
-	@Autowired
-	@Qualifier("sseListToUpdate")
-	List<SseEmitter> emittersUpdate;
-
-	@Autowired
-	@Qualifier("sseListToDelete")
-	List<SseEmitter> emittersDelete;
-
-	public void notifyAboutDelete(Server server){
-		List<SseEmitter> toDelete = new ArrayList<>();
-		for(SseEmitter emitter : emittersDelete){
-			try {
-				emitter.send(""+server.getId(), MediaType.TEXT_PLAIN);
-				//emitter.send(server);
-			} catch (Exception e) {
-				//e.printStackTrace();
-				System.out.println("emitter delete error");
-				toDelete.add(emitter);
-			}
-		}
-		emittersDelete.removeAll(toDelete);
-	}
-
-	public void notifyAboutUpdate(Server server){
-		List<SseEmitter> toDelete = new ArrayList<>();
-		for(SseEmitter emitter : emittersUpdate){
-			try {
-				emitter.send(server, MediaType.APPLICATION_JSON_UTF8);
-				//emitter.send(server);
-			} catch (Exception e) {
-				//e.printStackTrace();
-				System.out.println("emitter update error");
-				toDelete.add(emitter);
-			}
-		}
-		emittersUpdate.removeAll(toDelete);
-	}
 
 	@Autowired
 	SessionFactory sessionFactory;
 
 	@Override
 	public List<Server> allServers() {
-		List<Server> result = (List<Server>) sessionFactory.getCurrentSession()
-						.createCriteria(Server.class).list();
-		return result;
+//		List<Server> result = (List<Server>) sessionFactory.getCurrentSession()
+//						.createCriteria(Server.class).list();
+		CriteriaBuilder builder =  sessionFactory.getCurrentSession().getCriteriaBuilder();
+		CriteriaQuery<Server> criteria = builder.createQuery(Server.class);
+		Root<Server> contactRoot = criteria.from(Server.class);
+		return sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
 	}
 
 	@Override
 	public Server serverById(long id) {
-		Server server = (Server) sessionFactory.getCurrentSession()
-						.createCriteria(Server.class).add(Restrictions.eq("id", id)).uniqueResult();
-		return server;
+//		Server server = (Server) sessionFactory.getCurrentSession()
+//						.createCriteria(Server.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return sessionFactory.getCurrentSession().get(Server.class, id);
 	}
 
 	@Override
 	public Server createNew(Server server) {
 		sessionFactory.getCurrentSession().persist(server);
-		notifyAboutUpdate(server);
+		//notifyAboutUpdate(server);
 		return server;
 	}
 
 	@Override
 	public Server update(Server server) {
 		sessionFactory.getCurrentSession().update(server);
-		notifyAboutUpdate(server);
+		//if(emit)notifyAboutUpdate(server);
 		return server;
 	}
 
 	@Override
+	public void refresh(Server server) {
+		 sessionFactory.getCurrentSession().refresh(server);
+	}
+
+//	@Override
+//	public void clear() {
+//		sessionFactory.getCurrentSession().clear();
+//	}
+
+	@Override
 	public boolean delete(Server server) {
 		sessionFactory.getCurrentSession().delete(server);
-		notifyAboutDelete(server);
+		//notifyAboutDelete(server);
 		return true;
+	}
+
+	@Override
+	public List<ServerStatusCached> getStatuses(Server server) {
+		Criteria cr =  sessionFactory.getCurrentSession()
+						.createCriteria(ServerStatusCached.class).add(Restrictions.eq("owner", server));
+		return cr.list();
+	}
+
+	@Override
+	public List<OnMaintenanceStatus> getMaintenanceStatuses(Server server) {
+		Criteria cr =  sessionFactory.getCurrentSession()
+						.createCriteria(OnMaintenanceStatus.class).add(Restrictions.eq("owner", server));
+		return cr.list();
 	}
 
 }

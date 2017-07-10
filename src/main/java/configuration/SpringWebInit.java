@@ -1,5 +1,6 @@
 package configuration;
 
+import core.server.AutoupdateTimer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -20,6 +21,7 @@ public class SpringWebInit implements WebApplicationInitializer {
 	public void onStartup(ServletContext container) throws ServletException {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 		ctx.register(SpringConfig.class);
+		ctx.register(HibernateConfig.class);
 		ctx.setServletContext(container);
 
 		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
@@ -27,6 +29,13 @@ public class SpringWebInit implements WebApplicationInitializer {
 
 		servlet.setLoadOnStartup(1);
 		servlet.addMapping("/");
+
+		/**Start another thread that updates statuses of servers*/
+		ctx.refresh();
+		AutoupdateTimer timer = new AutoupdateTimer();
+		ctx.getAutowireCapableBeanFactory().autowireBean(timer);
+		Thread autoupdateServers = new Thread(timer);
+		autoupdateServers.start();
 
 		//java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
 	}
