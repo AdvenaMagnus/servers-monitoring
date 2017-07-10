@@ -79,19 +79,8 @@ public class PingService {
 	}
 
 	public boolean checkForConnection(){
-//
-//		long ping = 0;
-//		try {
-//			ping = getPing(InetAddress.getByName("www.e1.ru").getHostAddress().toString());
-//		} catch (UnknownHostException e) {
-//			e.printStackTrace();
-//		}
-//		return ping != Long.MAX_VALUE ? true : false;
-
-		//TODO make option for pinging on *nix servers by changing -n to -s
-
 		String osConf = "";
-		if(SystemUtils.IS_OS_LINUX) osConf = "-s";
+		if(SystemUtils.IS_OS_LINUX) osConf = "-c";
 		else {
 			if(SystemUtils.IS_OS_WINDOWS) osConf = "-n";
 		}

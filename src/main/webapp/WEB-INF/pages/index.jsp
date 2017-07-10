@@ -27,8 +27,8 @@
 <h1 style="padding-left: 20px;text-align: center">Мониторинг серверов</h1>
 <div ng-controller="mainController">
 	<div style="text-align: center; padding-bottom:10px;">
-		<a href ng-click="updateAllNow()" style="text-align: center">Обновить все |</a>
-		<a href="/statistics" style="text-align: center"> Статистика</a>
+		<a href ng-click="updateAllNow()" style="text-align: center">Обновить все</a>
+		<%--<a href="/statistics" style="text-align: center"> Статистика</a>--%>
 	</div>
 	<table class="table table-striped" style="width:auto;" align="center">
 		<tr>
