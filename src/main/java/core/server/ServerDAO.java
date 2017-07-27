@@ -17,8 +17,7 @@ public interface ServerDAO {
 
 	List<Server> allServers();
 	Server serverById(long id);
-	Server createNew(Server server);
-	Server update(Server server);
+	void saveOrUpdate(Server server);
 	void refresh(Server server);
 	//void clear();
 	boolean delete(Server server);

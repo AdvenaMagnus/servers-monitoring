@@ -33,7 +33,7 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"core", "configuration", "controller"})
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class SpringConfig extends WebMvcConfigurerAdapter{
 
 	@Bean

@@ -28,13 +28,7 @@ public class ServerDAOimpl implements ServerDAO {
 	}
 
 	@Override
-	public Server createNew(Server server) {
-		return null;
-	}
-
-	@Override
-	public Server update(Server server) {
-		return null;
+	public void saveOrUpdate(Server server) {
 	}
 
 	@Override
