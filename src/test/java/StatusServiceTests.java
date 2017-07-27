@@ -1,17 +1,17 @@
 import core.enums.ServerStatus;
 import core.server.AutoupdateTimer;
-import core.server.StatusDAO;
+import core.server.NetworkService;
+import core.server.status.StatusDAO;
+import core.server.status.StatusServiceImplGEO;
 import core.server.entities.Server;
 import core.server.entities.ServerStatusCached;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Date;
+import org.mockito.Spy;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -21,30 +21,34 @@ import static org.mockito.Mockito.doReturn;
 /**
  * Created by Alexander on 27.06.2017.
  */
-public class StatusDaoTests {
+public class StatusServiceTests {
 
 	@InjectMocks
-	StatusDAO statusDAO;
+	StatusServiceImplGEO statusService;
 
 	@Mock
-	SessionFactory sessionFactory;
+	NetworkService networkService;
+
+	@Mock
+	StatusDAO statusDAO;
 
 	Server server;
 	ServerStatusCached status;
 
 	@Before
 	public void init(){
-		statusDAO = spy(StatusDAO.class);
-		server = spy(Server.class);
-		status = spy(ServerStatusCached.class);
-		MockitoAnnotations.initMocks(this);
-		Session session = mock(Session.class);
-		when(sessionFactory.getCurrentSession()).thenReturn(session);
-	}
+		statusService = spy(StatusServiceImplGEO.class);
+		server = new Server();
+		server.setId(1);
+		server.setName("test");
 
-	@Test
-	public void simpleTest(){
-		assertTrue(true);
+		status = new ServerStatusCached();
+		status.setOwner(server);
+
+		MockitoAnnotations.initMocks(this);
+		doReturn(null).when(networkService).makeRequest(any());
+
+		//when(sessionFactory.getCurrentSession()).thenReturn(session);
 	}
 
 	/**
@@ -57,15 +61,13 @@ public class StatusDaoTests {
 		status.setIsClosed(false);
 
 		doReturn(status).when(statusDAO).getLastStatus(server);
-		//when(statusDAO.getLastStatus(server)).thenReturn(status);
-		doReturn(revisionAndDate).when(statusDAO).getRevisionAndDate(any());
-		//when(statusDAO.getRevisionAndDate(any())).thenReturn(revisionAndDate);
-		//doReturn(false).when(status).getIsClosed();
-		//when(status.getIsClosed()).thenReturn(false);
-		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
-		//when(statusDAO.isUpdateAvailable(status, any())).thenReturn(true);
+		//when(statusService.getLastStatus(server)).thenReturn(status);
+		doReturn(revisionAndDate).when(statusService).getRevisionAndDate(any());
+		doReturn(true).when(statusService).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
-		assertTrue(statusDAO.updateStatus(server)==status);
+		ServerStatusCached statusCached = statusService.updateStatus(server);
+
+		assertTrue(statusCached==status);
 		assertTrue(status.getRevision().equals(revisionAndDate[0]));
 		assertTrue(status.getRevisionDate()!=null);
 		assertTrue(status.getIsClosed()==false);
@@ -80,10 +82,10 @@ public class StatusDaoTests {
 	public void test2(){
 		status.setIsClosed(false);
 		doReturn(status).when(statusDAO).getLastStatus(server);
-		doReturn(null).when(statusDAO).getRevisionAndDate(any());
-		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
+		doReturn(null).when(statusService).getRevisionAndDate(any());
+		doReturn(true).when(statusService).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
-		assertTrue(statusDAO.updateStatus(server)==status);
+		assertTrue(statusService.updateStatus(server)==status);
 		assertTrue(status.getIsClosed()==true);
 	}
 
@@ -96,10 +98,10 @@ public class StatusDaoTests {
 		String[] revisionAndDate = {"7000", "4.02.2017"};
 
 		doReturn(null).when(statusDAO).getLastStatus(server);
-		doReturn(revisionAndDate).when(statusDAO).getRevisionAndDate(any());
-		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
+		doReturn(revisionAndDate).when(statusService).getRevisionAndDate(any());
+		doReturn(true).when(statusService).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
-		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+		ServerStatusCached serverStatusCached = statusService.updateStatus(server);
 
 		assertTrue(serverStatusCached!=null);
 		assertTrue(serverStatusCached.getRevision().equals(revisionAndDate[0]));
@@ -117,10 +119,10 @@ public class StatusDaoTests {
 	public void test4(){
 
 		doReturn(null).when(statusDAO).getLastStatus(server);
-		doReturn(null).when(statusDAO).getRevisionAndDate(any());
-		doReturn(true).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
+		doReturn(null).when(statusService).getRevisionAndDate(any());
+		doReturn(true).when(statusService).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
-		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+		ServerStatusCached serverStatusCached = statusService.updateStatus(server);
 
 		assertTrue(serverStatusCached!=null);
 		assertTrue(serverStatusCached.getRevision()==null);
@@ -137,9 +139,9 @@ public class StatusDaoTests {
 	public void test5(){
 		status.setIsClosed(false);
 		doReturn(status).when(statusDAO).getLastStatus(server);
-		doReturn(false).when(statusDAO).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
+		doReturn(false).when(statusService).isUpdateAvailable(status, AutoupdateTimer.updateInterval);
 
-		ServerStatusCached serverStatusCached = statusDAO.updateStatus(server);
+		ServerStatusCached serverStatusCached = statusService.updateStatus(server);
 
 		assertTrue(serverStatusCached!=null);
 		assertTrue(serverStatusCached==status);

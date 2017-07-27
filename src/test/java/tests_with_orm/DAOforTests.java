@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class TestDAO {
+public class DAOforTests {
 
     @Autowired
     SessionFactory sessionFactory;

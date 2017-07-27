@@ -3,13 +3,16 @@ package tests_with_orm;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import controller.MainController;
 import controller.NotifyService;
-import core.server.PingService;
+import core.server.NetworkService;
 import core.server.ServerDAO;
 import core.server.ServerDAOHib;
-import core.server.StatusDAO;
+import core.server.m_status.MStatusDAO;
+import core.server.m_status.MStatusDAOimpl;
+import core.server.m_status.MStatusService;
+import core.server.m_status.MStatusServiceImpl;
+import core.server.status.StatusServiceImplGEO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -38,15 +41,16 @@ public class TestConf {
 	}
 
 	@Bean
-	public PingService getPingService(){
-		return spy(PingService.class);
+	public NetworkService getPingService(){
+		return spy(NetworkService.class);
 	}
 
 
 	@Bean
-	public StatusDAO getStatusDao(){
-		//return new StatusDAO();
-		return spy(StatusDAO.class);
+	public StatusServiceImplGEO getStatusDao(){
+		//return new StatusService();
+		StatusServiceImplGEO toReturn = spy(StatusServiceImplGEO.class);
+		return toReturn;
 	}
 
 	@Bean
@@ -76,8 +80,8 @@ public class TestConf {
 	}
 
 	@Bean
-	public TestDAO getTestDAO(){
-		return new TestDAO();
+	public DAOforTests getTestDAO(){
+		return new DAOforTests();
 	}
 
 	@Bean
@@ -95,6 +99,16 @@ public class TestConf {
 	@Bean
 	public SseEmitter getEmmitter(){
 		return mock(SseEmitter.class);
+	}
+
+	@Bean
+	public MStatusDAO getMstatusDAO(){
+		return spy(MStatusDAOimpl.class);
+	}
+
+	@Bean
+	public MStatusService getMstatusService(){
+		return spy(MStatusServiceImpl.class);
 	}
 
 }
