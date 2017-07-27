@@ -1,16 +1,12 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.MainController;
 import controller.NotifyService;
-import core.enums.ServerStatus;
 import core.server.ServerDAO;
-import core.server.StatusDAO;
+import core.server.status.StatusServiceImplGEO;
 import core.server.entities.Server;
 import core.server.entities.ServerStatusCached;
 import core.utils.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -25,9 +21,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.*;
 
 /**
  * Created by Alexander on 01.07.2017.
@@ -50,15 +44,15 @@ public class ControllerTests {
 
         server = new Server();
         server.setId(10);
-        //serverDAO.createNew(server);
+        //serverDAO.saveOrUpdate(server);
 
         status = new ServerStatusCached();
         status.setId(1);
         status.setDate(date);
         status.setOwner(server);
-        //statusDAO.save(status);
+        //statusService.saveOrUpdate(status);
 
-        StatusDAO statusDAOMock = mock(StatusDAO.class);
+        StatusServiceImplGEO statusDAOMock = mock(StatusServiceImplGEO.class);
         doReturn(status).when(statusDAOMock).updateStatus(any());
 
         ServerDAO serverDAOMock = mock(ServerDAO.class);

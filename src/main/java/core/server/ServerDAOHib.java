@@ -45,17 +45,8 @@ public class ServerDAOHib implements ServerDAO{
 	}
 
 	@Override
-	public Server createNew(Server server) {
-		sessionFactory.getCurrentSession().persist(server);
-		//notifyAboutUpdate(server);
-		return server;
-	}
-
-	@Override
-	public Server update(Server server) {
-		sessionFactory.getCurrentSession().update(server);
-		//if(emit)notifyAboutUpdate(server);
-		return server;
+	public void saveOrUpdate(Server server) {
+		sessionFactory.getCurrentSession().saveOrUpdate(server);
 	}
 
 	@Override

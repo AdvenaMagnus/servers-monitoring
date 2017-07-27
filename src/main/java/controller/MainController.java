@@ -1,12 +1,11 @@
 package controller;
 
-import core.server.LightServer;
-import core.server.PingService;
-import core.server.StatusDAO;
+import core.server.*;
 import core.server.entities.Server;
-import core.server.ServerDAO;
 import core.server.entities.ServerDetailInfo;
 import core.server.entities.ServerStatusCached;
+import core.server.status.StatusService;
+import core.server.status.StatusServiceImplGEO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,23 +33,23 @@ public class MainController {
 	NotifyService notifyService;
 
 	@Autowired
-	StatusDAO statusDAO;
+	StatusService statusDAO;
 
 	@Autowired
-	PingService pingService;
+	NetworkService pingService;
 
 	public MainController(){}
 
-	public MainController(StatusDAO statusDAO){
+	public MainController(StatusServiceImplGEO statusDAO){
 		this.statusDAO = statusDAO;
 	}
 
-	public MainController(StatusDAO statusDAO, ServerDAO serverDao){
+	public MainController(StatusServiceImplGEO statusDAO, ServerDAO serverDao){
 		this.statusDAO = statusDAO;
 		this.serverDao = serverDao;
 	}
 
-	public MainController(StatusDAO statusDAO, ServerDAO serverDao, NotifyService notifyService){
+	public MainController(StatusServiceImplGEO statusDAO, ServerDAO serverDao, NotifyService notifyService){
 		this.statusDAO = statusDAO;
 		this.serverDao = serverDao;
 		this.notifyService = notifyService;
@@ -108,20 +107,16 @@ public class MainController {
 
 	@RequestMapping(path = "/servers/create", method = RequestMethod.PUT)
 	public ResponseEntity<Server> newServer(@RequestBody Server server){
-		Server serv = serverDao.createNew(server);
-		if(serv!=null){
-			notifyService.notifyAboutUpdate(server);
-			return new ResponseEntity(serv, HttpStatus.OK);
-		}
-		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		serverDao.saveOrUpdate(server);
+		notifyService.notifyAboutUpdate(server);
+		return new ResponseEntity(server, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/servers/update", method = RequestMethod.POST)
 	public ResponseEntity<Server> updateServer(@RequestBody Server server){
-		Server serv = serverDao.update(server);
+		serverDao.saveOrUpdate(server);
 		notifyService.notifyAboutUpdate(server);
-		if(serv!=null) return new ResponseEntity(serv, HttpStatus.OK);
-		else return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity(server, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/servers/delete/{serverId}", method = RequestMethod.DELETE)

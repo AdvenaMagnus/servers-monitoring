@@ -2,12 +2,9 @@ package core.server;
 
 import controller.NotifyService;
 import core.server.entities.Server;
-import core.server.entities.ServerStatusCached;
+import core.server.status.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,7 +19,7 @@ public class AutoupdateTimer implements Runnable{
 	public static final int updateInterval = 2;
 
 	@Autowired
-	StatusDAO statusDAO;
+	StatusService statusDAO;
 
 	@Autowired
 	ServerDAO serverDAO;
@@ -31,7 +28,7 @@ public class AutoupdateTimer implements Runnable{
 	NotifyService notifyService;
 
 	@Autowired
-	PingService pingService;
+	NetworkService pingService;
 
 	@Override
 	public void run() {
@@ -48,11 +45,7 @@ public class AutoupdateTimer implements Runnable{
 						service.execute(() -> {
 							String ping = pingService.getPingToServer(server);
 							notifyService.notifyPing(server, ping);
-							if(!ping.equals(PingService.noConnection)
-									&& !ping.equals(PingService.noPing)){
-								ServerStatusCached status = statusDAO.updateStatus(server);
-								notifyService.notifyStatus(status);
-							}
+							notifyService.notifyStatus(statusDAO.updateStatus(server));
 						});
 					}
 				} finally {
@@ -61,10 +54,10 @@ public class AutoupdateTimer implements Runnable{
 
 //				for(Server server : serverDAO.allServers()){
 ////					new Thread(() -> {
-////						statusDAO.updateStatus(server);
+////						statusService.updateStatus(server);
 ////						notifyService.notifyStatus(server);
 ////					}).start();
-//					ServerStatusCached status = statusDAO.updateStatus(server);
+//					ServerStatusCached status = statusService.updateStatus(server);
 //					notifyService.notifyStatus(status);
 //				}
 				System.out.println("Autoupdate servers finished");
