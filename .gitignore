@@ -1,2 +1,7 @@
 #Target folder
 target
+*.iml
+.idea/**/workspace.xml
+.idea/**/libraries
+.idea/**/tasks.xml
+.idea/dictionaries
